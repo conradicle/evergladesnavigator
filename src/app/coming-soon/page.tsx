@@ -13,8 +13,8 @@ export default function ComingSoonPage() {
       <Image
         src="/logo-full.png"
         alt="Everglades Navigator"
-        width={2233}
-        height={1732}
+        width={2345}
+        height={1844}
         className="w-56 sm:w-64"
         priority
       />

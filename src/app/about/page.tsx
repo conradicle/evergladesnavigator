@@ -14,8 +14,8 @@ export default function AboutPage() {
       <Image
         src="/logo-full.png"
         alt="Everglades Navigator"
-        width={2233}
-        height={1732}
+        width={2345}
+        height={1844}
         className="mx-auto w-48 sm:w-56"
         priority
       />
