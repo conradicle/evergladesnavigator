@@ -27,19 +27,14 @@ Open [http://localhost:3000](http://localhost:3000).
 - `src/lib/tours.ts` — trip catalog (fishing charters, ecotours, combo trips) — edit this to change offerings. Pricing isn't set yet; the site shows "TBD" everywhere until real prices are added.
 - `src/lib/stripe.ts` — payment infrastructure placeholder and activation steps
 
-## Adding the real logo
+## Logo
 
-`src/components/Logo.tsx` currently renders a text wordmark with a simple
-SVG mark so the site looks finished without a real logo file. Once you have
-the logo:
-
-1. Save it as `public/logo.svg` (or `.png`).
-2. In `src/components/Logo.tsx`, replace the `<svg>`/text markup with:
-   ```tsx
-   import Image from "next/image";
-   // ...
-   <Image src="/logo.svg" alt="Everglades Navigator" width={140} height={32} />
-   ```
+`public/logo-icon.png` (circular mark, used in the header/footer next to
+the text wordmark via `src/components/Logo.tsx`) and `public/logo-full.png`
+(the full icon + wordmark lockup, not currently used on the site but
+available for other purposes — social profiles, print, etc.) were extracted
+from the original logo artwork, both with transparent backgrounds. Replace
+either file directly (keep the same filename) to swap in an updated logo.
 
 ## Adding photos
 
@@ -52,7 +47,7 @@ eventually go (home page, tours, gallery, about). Once you have photos:
 
 ## Editing trip content
 
-Trip names, descriptions, durations, and starting prices all live in
+Trip names, descriptions, durations, and group sizes all live in
 `src/lib/tours.ts`. Editing that file updates the home page, `/tours`, and
 the booking form's trip dropdown together.
 
