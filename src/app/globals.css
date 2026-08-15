@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+:root {
+  --color-swamp-950: #0d1f16;
+  --color-swamp-900: #142f21;
+  --color-swamp-800: #1f4530;
+  --color-swamp-700: #2b5c3f;
+  --color-swamp-600: #3a7551;
+  --color-swamp-500: #4f9166;
+
+  --color-sand-100: #fbf7ec;
+  --color-sand-200: #f4ecd6;
+  --color-sand-300: #e9dbb8;
+  --color-sand-400: #d8c393;
+
+  --color-water-700: #163e47;
+  --color-water-600: #1d5560;
+  --color-water-500: #2b7482;
+
+  --color-sunset-500: #e08e45;
+  --color-sunset-600: #cc7530;
+
+  --color-ink-900: #17211a;
+
+  --background: var(--color-sand-100);
+  --foreground: var(--color-ink-900);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-swamp-950: var(--color-swamp-950);
+  --color-swamp-900: var(--color-swamp-900);
+  --color-swamp-800: var(--color-swamp-800);
+  --color-swamp-700: var(--color-swamp-700);
+  --color-swamp-600: var(--color-swamp-600);
+  --color-swamp-500: var(--color-swamp-500);
+
+  --color-sand-100: var(--color-sand-100);
+  --color-sand-200: var(--color-sand-200);
+  --color-sand-300: var(--color-sand-300);
+  --color-sand-400: var(--color-sand-400);
+
+  --color-water-700: var(--color-water-700);
+  --color-water-600: var(--color-water-600);
+  --color-water-500: var(--color-water-500);
+
+  --color-sunset-500: var(--color-sunset-500);
+  --color-sunset-600: var(--color-sunset-600);
+
+  --color-ink-900: var(--color-ink-900);
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-fraunces);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
