@@ -25,7 +25,7 @@ export async function POST() {
   //       price_data: {
   //         currency: "usd",
   //         product_data: { name: trip.name },
-  //         unit_amount: toStripeAmount(estimateTripPrice(tripSlug, partySize)),
+  //         unit_amount: toStripeAmount(priceForTrip(tripSlug, partySize)),
   //       },
   //       quantity: 1,
   //     },

@@ -8,7 +8,6 @@ export interface Trip {
   groupSize: string;
   description: string;
   highlights: string[];
-  priceFrom: number;
 }
 
 export const TRIP_CATEGORY_LABELS: Record<TripCategory, string> = {
@@ -31,7 +30,6 @@ export const trips: Trip[] = [
       "Light-tackle and fly options",
       "All skill levels welcome",
     ],
-    priceFrom: 450,
   },
   {
     slug: "full-day-fishing-charter",
@@ -46,7 +44,6 @@ export const trips: Trip[] = [
       "Lunch break on the water",
       "Best for experienced anglers",
     ],
-    priceFrom: 750,
   },
   {
     slug: "everglades-wildlife-ecotour",
@@ -61,7 +58,6 @@ export const trips: Trip[] = [
       "Narrated by a local guide",
       "Great for photography",
     ],
-    priceFrom: 220,
   },
   {
     slug: "sunset-ecotour",
@@ -76,7 +72,6 @@ export const trips: Trip[] = [
       "Cooler evening temperatures",
       "Great for couples and small groups",
     ],
-    priceFrom: 240,
   },
   {
     slug: "fish-and-explore-combo",
@@ -91,7 +86,6 @@ export const trips: Trip[] = [
       "Flexible pacing on the water",
       "Good fit for mixed groups",
     ],
-    priceFrom: 600,
   },
 ];
 

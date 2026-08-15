@@ -6,7 +6,7 @@ import { TRIP_CATEGORY_LABELS, trips, type TripCategory } from "@/lib/tours";
 export const metadata: Metadata = {
   title: "Tours | Everglades Navigator",
   description:
-    "Fishing charters and ecotours through the Florida Everglades — trip lengths, group sizes, and starting prices.",
+    "Fishing charters and ecotours through the Florida Everglades — trip lengths and group sizes.",
 };
 
 const SECTIONS: { id: TripCategory; blurb: string; variant: "water" | "swamp" }[] = [
@@ -40,10 +40,9 @@ export default function ToursPage() {
           Fishing charters &amp; ecotours
         </h1>
         <p className="text-swamp-800">
-          Prices below are starting estimates for planning purposes. Final
-          pricing depends on trip length, group size, and season — request a
-          booking and we&apos;ll confirm exact details before anything is
-          charged.
+          Pricing is still being finalized and depends on trip length, group
+          size, and season — request a booking and we&apos;ll follow up with
+          exact details before anything is charged.
         </p>
       </div>
 
@@ -75,7 +74,7 @@ export default function ToursPage() {
                         {trip.name}
                       </h3>
                       <span className="whitespace-nowrap text-sm font-semibold text-sunset-600">
-                        From ${trip.priceFrom}
+                        Pricing: TBD
                       </span>
                     </div>
                     <p className="text-sm text-swamp-700">

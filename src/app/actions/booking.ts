@@ -1,13 +1,11 @@
 "use server";
 
 import { getTripBySlug } from "@/lib/tours";
-import { estimateTripPrice } from "@/lib/pricing";
 import { isPaymentsEnabled } from "@/lib/stripe";
 
 export interface BookingState {
   status: "idle" | "success" | "error";
   message?: string;
-  estimate?: number;
 }
 
 export async function submitBookingRequest(
@@ -39,8 +37,6 @@ export async function submitBookingRequest(
     return { status: "error", message: "Please enter a valid email address." };
   }
 
-  const estimate = estimateTripPrice(tripSlug, partySize);
-
   // Online payments aren't live yet (see lib/stripe.ts). Once
   // STRIPE_SECRET_KEY is set, this is where the booking would be handed off
   // to POST /api/checkout to create a Stripe Checkout Session and redirect
@@ -57,13 +53,11 @@ export async function submitBookingRequest(
     email,
     phone,
     notes,
-    estimate,
   });
 
   return {
     status: "success",
     message:
       "Thanks — your trip request has been received. We'll follow up by email to confirm availability and pricing.",
-    estimate: estimate ?? undefined,
   };
 }

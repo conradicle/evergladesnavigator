@@ -24,8 +24,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - `src/app/actions/` — Server Actions for the contact and booking forms
 - `src/app/api/checkout/` — reserved Stripe Checkout endpoint (returns 501 until payments are enabled)
 - `src/components/` — shared UI (Header, Footer, Logo, forms, photo placeholders)
-- `src/lib/tours.ts` — trip catalog (fishing charters, ecotours, combo trips) — edit this to change offerings/prices
-- `src/lib/pricing.ts` — rough price estimator used on the Tours/Booking pages
+- `src/lib/tours.ts` — trip catalog (fishing charters, ecotours, combo trips) — edit this to change offerings. Pricing isn't set yet; the site shows "TBD" everywhere until real prices are added.
 - `src/lib/stripe.ts` — payment infrastructure placeholder and activation steps
 
 ## Adding the real logo

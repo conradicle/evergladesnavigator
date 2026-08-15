@@ -3,7 +3,6 @@
 import { useActionState, useState } from "react";
 import { submitBookingRequest, type BookingState } from "@/app/actions/booking";
 import { trips } from "@/lib/tours";
-import { estimateTripPrice } from "@/lib/pricing";
 
 const initialState: BookingState = { status: "idle" };
 
@@ -14,8 +13,6 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
   );
   const [tripSlug, setTripSlug] = useState(initialTrip ?? trips[0].slug);
   const [partySize, setPartySize] = useState(2);
-
-  const liveEstimate = estimateTripPrice(tripSlug, partySize);
 
   return (
     <form action={formAction} className="space-y-5">
@@ -121,13 +118,10 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
         />
       </div>
 
-      {liveEstimate !== null && (
-        <p className="text-sm text-swamp-800">
-          Estimated price:{" "}
-          <span className="font-semibold text-swamp-950">${liveEstimate}</span>{" "}
-          — final pricing confirmed by email, nothing is charged yet.
-        </p>
-      )}
+      <p className="text-sm text-swamp-800">
+        Pricing: <span className="font-semibold text-swamp-950">TBD</span> —
+        confirmed by email, nothing is charged yet.
+      </p>
 
       {state.status === "error" && (
         <p className="text-sm font-medium text-red-700">{state.message}</p>
@@ -135,9 +129,6 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
       {state.status === "success" && (
         <div className="rounded-lg border border-swamp-700/30 bg-sand-200/60 p-4 text-sm text-swamp-900">
           <p className="font-medium">{state.message}</p>
-          {state.estimate !== undefined && (
-            <p className="mt-1">Estimated price: ${state.estimate}</p>
-          )}
         </div>
       )}
 
