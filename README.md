@@ -9,6 +9,12 @@ requests (contact form, booking form) rather than take live payments.
 Payment infrastructure is scaffolded but intentionally not wired up — see
 [Payments](#payments-not-live-yet) below.
 
+**The live site currently shows a "coming soon" gate** (`src/proxy.ts`
+rewrites every request to `src/app/coming-soon/page.tsx`). All the real
+pages, forms, and routes below still exist and work — they're just not
+publicly reachable yet. Delete `src/proxy.ts` to make the full site live
+again.
+
 ## Getting started
 
 ```bash
