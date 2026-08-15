@@ -140,9 +140,6 @@ export default function Home() {
               </h3>
               <p className="mt-1 text-sm text-swamp-800">{trip.duration}</p>
               <p className="mt-3 text-sm text-swamp-800">{trip.description}</p>
-              <p className="mt-4 text-sm font-semibold text-sunset-600">
-                From ${trip.priceFrom}
-              </p>
             </div>
           ))}
         </div>
