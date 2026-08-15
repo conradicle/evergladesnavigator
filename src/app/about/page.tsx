@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import PhotoPlaceholder from "@/components/PhotoPlaceholder";
 
 export const metadata: Metadata = {
@@ -10,10 +11,19 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
-      <p className="text-sm font-semibold uppercase tracking-widest text-sunset-600">
+      <Image
+        src="/logo-full.png"
+        alt="Everglades Navigator"
+        width={2233}
+        height={1732}
+        className="mx-auto w-48 sm:w-56"
+        priority
+      />
+
+      <p className="mt-10 text-center text-sm font-semibold uppercase tracking-widest text-sunset-600">
         About
       </p>
-      <h1 className="mt-2 font-display text-4xl font-semibold text-swamp-950">
+      <h1 className="mt-2 text-center font-display text-4xl font-semibold text-swamp-950">
         Meet your guide
       </h1>
 
