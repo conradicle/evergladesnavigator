@@ -13,8 +13,8 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-swamp-800/10 bg-sand-100/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="text-swamp-900 transition hover:text-swamp-700">
-          {/* Under 400px only the icon shows; the name stays for screen readers. */}
-          <Logo textClassName="sr-only text-base min-[400px]:not-sr-only sm:text-lg" />
+          {/* Under 380px only the icon shows; the name stays for screen readers. */}
+          <Logo textClassName="sr-only text-base min-[380px]:not-sr-only sm:text-lg" />
         </Link>
         <nav className="hidden items-center gap-8 text-sm font-medium text-swamp-900 sm:flex">
           {NAV_LINKS.map((link) => (
