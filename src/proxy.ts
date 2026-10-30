@@ -13,6 +13,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!coming-soon|_next/static|_next/image|favicon.ico|logo-icon.png|logo-full.png).*)",
+    "/((?!coming-soon|_next/static|_next/image|favicon.ico|logo-icon.png|logo-full.png|robots.txt|sitemap.xml|opengraph-image).*)",
   ],
 };

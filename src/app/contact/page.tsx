@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
+import { business } from "@/lib/business";
 
 export const metadata: Metadata = {
   title: "Contact | Everglades Navigator",
-  description: "Get in touch with Everglades Navigator.",
+  description: `Contact ${business.name} to plan a fishing charter or ecotour from ${business.launchPoints.join(" or ")}, ${business.stateCode}. All trips are booked by appointment.`,
 };
 
 export default function ContactPage() {
@@ -16,9 +17,30 @@ export default function ContactPage() {
         Get in touch
       </h1>
       <p className="mt-4 text-swamp-800">
-        Phone and email details will be posted here once the business
-        launches. Until then, send a message below and we&apos;ll follow up.
+        Trips leave from {business.launchPoints.join(" and ")},{" "}
+        {business.state}, and are booked by appointment. Send a message below
+        and we&apos;ll follow up.
       </p>
+      {(business.phone || business.email) && (
+        <ul className="mt-4 space-y-1 text-swamp-800">
+          {business.phone && (
+            <li>
+              Phone:{" "}
+              <a href={`tel:${business.phone}`} className="font-semibold text-swamp-900 underline">
+                {business.phone}
+              </a>
+            </li>
+          )}
+          {business.email && (
+            <li>
+              Email:{" "}
+              <a href={`mailto:${business.email}`} className="font-semibold text-swamp-900 underline">
+                {business.email}
+              </a>
+            </li>
+          )}
+        </ul>
+      )}
 
       <div className="mt-10">
         <ContactForm />

@@ -4,9 +4,9 @@ import PhotoPlaceholder from "@/components/PhotoPlaceholder";
 import { TRIP_CATEGORY_LABELS, trips, type TripCategory } from "@/lib/tours";
 
 export const metadata: Metadata = {
-  title: "Tours | Everglades Navigator",
+  title: "Everglades Fishing Charters & Wildlife Tours | Everglades Navigator",
   description:
-    "Fishing charters and ecotours through the Florida Everglades — trip lengths and group sizes.",
+    "Backcountry fishing charters, wildlife ecotours, and combo trips in Everglades National Park, Florida Bay, and the Ten Thousand Islands. Departing Flamingo and Chokoloskee, FL.",
 };
 
 const SECTIONS: { id: TripCategory; blurb: string; variant: "water" | "swamp" }[] = [

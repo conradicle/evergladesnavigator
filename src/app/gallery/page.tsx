@@ -4,7 +4,9 @@ import PhotoPlaceholder from "@/components/PhotoPlaceholder";
 export const metadata: Metadata = {
   title: "Gallery | Everglades Navigator",
   description:
-    "Photos from Everglades Navigator's fishing charters and ecotours — coming soon.",
+    "Photos from Everglades Navigator's fishing charters and ecotours, coming soon.",
+  // Keep out of search until real trip photos replace the placeholders.
+  robots: { index: false, follow: true },
 };
 
 const PLACEHOLDER_SLOTS = [

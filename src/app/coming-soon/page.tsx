@@ -4,7 +4,8 @@ import Image from "next/image";
 export const metadata: Metadata = {
   title: "Coming Soon | Everglades Navigator",
   description:
-    "Everglades Navigator — guided fishing charters and ecotours in the Florida Everglades. Site launching soon.",
+    "Everglades Navigator: guided fishing charters and ecotours in the Florida Everglades. Site launching soon.",
+  robots: { index: false, follow: false },
 };
 
 export default function ComingSoonPage() {
@@ -13,8 +14,8 @@ export default function ComingSoonPage() {
       <Image
         src="/logo-full.png"
         alt="Everglades Navigator"
-        width={2345}
-        height={1844}
+        width={800}
+        height={629}
         className="w-56 sm:w-64"
         priority
       />

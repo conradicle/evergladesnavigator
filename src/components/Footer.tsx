@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Logo from "./Logo";
+import { business, launchPointsLabel } from "@/lib/business";
 
 export default function Footer() {
   return (
@@ -10,9 +11,24 @@ export default function Footer() {
             <Logo />
           </div>
           <p className="text-sm text-sand-300">
-            Guided fishing charters and ecotours through the Florida Everglades.
-            Online booking is coming soon — reach out to plan your trip.
+            Guided fishing charters and ecotours from {launchPointsLabel},{" "}
+            {business.state}. Trips by appointment.
           </p>
+          {(business.phone || business.email) && (
+            <p className="text-sm text-sand-300">
+              {business.phone && (
+                <a href={`tel:${business.phone}`} className="hover:text-sunset-500">
+                  {business.phone}
+                </a>
+              )}
+              {business.phone && business.email && " · "}
+              {business.email && (
+                <a href={`mailto:${business.email}`} className="hover:text-sunset-500">
+                  {business.email}
+                </a>
+              )}
+            </p>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-8 text-sm sm:flex sm:gap-16">
           <div className="space-y-2">

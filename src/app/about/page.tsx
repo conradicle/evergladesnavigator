@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import PhotoPlaceholder from "@/components/PhotoPlaceholder";
+import { business } from "@/lib/business";
 
 export const metadata: Metadata = {
-  title: "About | Everglades Navigator",
-  description:
-    "About Everglades Navigator and the captain guiding fishing charters and ecotours through the Florida Everglades.",
+  title: `${business.captain.name} | Everglades Fishing Guide`,
+  description: `${business.captain.name}, a ${business.captain.credential} with ${business.captain.experience}, guides fishing charters and ecotours from ${business.launchPoints.join(" and ")}, ${business.stateCode}.`,
 };
 
 export default function AboutPage() {
@@ -14,8 +15,8 @@ export default function AboutPage() {
       <Image
         src="/logo-full.png"
         alt="Everglades Navigator"
-        width={2345}
-        height={1844}
+        width={800}
+        height={629}
         className="mx-auto w-48 sm:w-56"
         priority
       />
@@ -24,7 +25,7 @@ export default function AboutPage() {
         About
       </p>
       <h1 className="mt-2 text-center font-display text-4xl font-semibold text-swamp-950">
-        Meet your guide
+        {business.captain.name}
       </h1>
 
       <div className="mt-10 flex flex-col gap-8 sm:flex-row sm:items-start">
@@ -35,14 +36,17 @@ export default function AboutPage() {
         />
         <div className="space-y-4 text-swamp-800">
           <p>
-            Everglades Navigator is a small guided charter and ecotour
-            operation based in the Florida Everglades. Bio and captain
-            details are on their way — check back soon, or reach out through
+            {business.captain.name} is a {business.captain.credential} with{" "}
+            {business.captain.experience}. {business.name} is a small guided
+            charter and ecotour operation running trips from{" "}
+            {business.launchPoints.join(" and ")} into{" "}
+            {business.serviceArea.slice(0, -1).join(", ")}, and the{" "}
+            {business.serviceArea.at(-1)}. Have a question? Reach out through
             the{" "}
-            <a href="/contact" className="font-semibold text-swamp-900 underline">
+            <Link href="/contact" className="font-semibold text-swamp-900 underline">
               contact page
-            </a>{" "}
-            with any questions in the meantime.
+            </Link>
+            .
           </p>
           <p>
             Every trip — whether it&apos;s a backcountry fishing charter or a

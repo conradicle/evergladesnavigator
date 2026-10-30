@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PhotoPlaceholder from "@/components/PhotoPlaceholder";
 import { trips } from "@/lib/tours";
+import { business, launchPointsLabel } from "@/lib/business";
 
 const FEATURED_CATEGORIES = [
   {
@@ -45,7 +46,7 @@ export default function Home() {
       <section className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-16 sm:py-24 lg:flex-row lg:items-center">
         <div className="flex-1 space-y-6">
           <p className="text-sm font-semibold uppercase tracking-widest text-sunset-600">
-            Coming soon to the Florida Everglades
+            Coming soon to {launchPointsLabel}, {business.state}
           </p>
           <h1 className="font-display text-4xl font-semibold leading-tight text-swamp-950 sm:text-5xl">
             Guided fishing charters &amp; ecotours through the Everglades
