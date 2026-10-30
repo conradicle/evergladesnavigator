@@ -24,7 +24,7 @@ export default function AboutPage() {
       <p className="mt-10 text-center text-sm font-semibold uppercase tracking-widest text-sunset-600">
         About
       </p>
-      <h1 className="mt-2 text-center font-display text-4xl font-semibold text-swamp-950">
+      <h1 className="mt-2 text-center font-display text-3xl font-semibold text-balance text-swamp-950 sm:text-4xl">
         {business.captain.name}
       </h1>
 
@@ -32,7 +32,7 @@ export default function AboutPage() {
         <PhotoPlaceholder
           label="Captain photo coming soon"
           variant="sunset"
-          className="aspect-square w-full sm:w-64"
+          className="aspect-square w-full shrink-0 sm:w-64"
         />
         <div className="space-y-4 text-swamp-800">
           <p>

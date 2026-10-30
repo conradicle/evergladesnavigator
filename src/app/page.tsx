@@ -49,10 +49,10 @@ export default function Home() {
             Coming soon to the Florida Everglades
           </p>
           <div className="space-y-3">
-            <h1 className="font-display text-4xl font-semibold leading-tight text-swamp-950 sm:text-5xl">
+            <h1 className="font-display text-3xl font-semibold leading-tight text-balance text-swamp-950 sm:text-4xl xl:text-5xl">
               Everglades Fishing Charters &amp; Ecotours from {launchPointsLabel}
             </h1>
-            <p className="font-display text-xl text-swamp-800 sm:text-2xl">
+            <p className="font-display text-lg text-balance text-swamp-800 sm:text-xl xl:text-2xl">
               Guided fishing charters &amp; ecotours through the Everglades
             </p>
           </div>
