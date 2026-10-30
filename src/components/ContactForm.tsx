@@ -22,7 +22,7 @@ export default function ContactForm() {
           name="name"
           type="text"
           required
-          className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+          className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
         />
       </div>
       <div>
@@ -34,7 +34,7 @@ export default function ContactForm() {
           name="email"
           type="email"
           required
-          className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+          className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
         />
       </div>
       <div>
@@ -46,16 +46,21 @@ export default function ContactForm() {
           name="message"
           required
           rows={5}
-          className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+          className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
         />
       </div>
 
-      {state.status === "error" && (
-        <p className="text-sm font-medium text-red-700">{state.message}</p>
-      )}
-      {state.status === "success" && (
-        <p className="text-sm font-medium text-swamp-700">{state.message}</p>
-      )}
+      {/* Always rendered so screen readers announce messages when they appear. */}
+      <div role="alert">
+        {state.status === "error" && (
+          <p className="text-sm font-medium text-red-700">{state.message}</p>
+        )}
+      </div>
+      <div role="status">
+        {state.status === "success" && (
+          <p className="text-sm font-medium text-swamp-700">{state.message}</p>
+        )}
+      </div>
 
       <button
         type="submit"

@@ -17,8 +17,9 @@ export default function Logo({
         className="h-8 w-8"
         priority
       />
-      <span className={`whitespace-nowrap font-display tracking-wide ${textClassName}`}>
-        Everglades Navigator
+      {/* Inner span keeps nowrap even when textClassName resets white-space (e.g. not-sr-only). */}
+      <span className={`font-display tracking-wide ${textClassName}`}>
+        <span className="whitespace-nowrap">Everglades Navigator</span>
       </span>
     </span>
   );

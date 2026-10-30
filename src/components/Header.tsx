@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Logo from "./Logo";
+import NavLink from "./NavLink";
 
 const NAV_LINKS = [
   { href: "/tours", label: "Tours" },
@@ -16,15 +17,15 @@ export default function Header() {
           {/* Under 380px only the icon shows; the name stays for screen readers. */}
           <Logo textClassName="sr-only text-base min-[380px]:not-sr-only sm:text-lg" />
         </Link>
-        <nav className="hidden items-center gap-8 text-sm font-medium text-swamp-900 sm:flex">
+        <nav aria-label="Main" className="hidden items-center gap-8 text-sm font-medium text-swamp-900 md:flex">
           {NAV_LINKS.map((link) => (
-            <Link
+            <NavLink
               key={link.href}
               href={link.href}
-              className="transition hover:text-sunset-600"
+              className="transition hover:text-sunset-700 aria-[current=page]:underline aria-[current=page]:underline-offset-4"
             >
               {link.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
         <Link
@@ -34,11 +35,15 @@ export default function Header() {
           Book a Trip
         </Link>
       </div>
-      <nav className="flex items-center gap-6 overflow-x-auto border-t border-swamp-800/10 px-6 py-2 text-sm font-medium text-swamp-900 sm:hidden">
+      <nav aria-label="Main" className="flex items-center gap-6 overflow-x-auto border-t border-swamp-800/10 px-6 py-2 text-sm font-medium text-swamp-900 md:hidden">
         {NAV_LINKS.map((link) => (
-          <Link key={link.href} href={link.href} className="whitespace-nowrap">
+          <NavLink
+            key={link.href}
+            href={link.href}
+            className="whitespace-nowrap aria-[current=page]:underline aria-[current=page]:underline-offset-4"
+          >
             {link.label}
-          </Link>
+          </NavLink>
         ))}
       </nav>
     </header>

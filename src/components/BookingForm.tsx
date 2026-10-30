@@ -25,7 +25,7 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
           name="trip"
           value={tripSlug}
           onChange={(e) => setTripSlug(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+          className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
         >
           {trips.map((trip) => (
             <option key={trip.slug} value={trip.slug}>
@@ -45,7 +45,7 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
             name="date"
             type="date"
             required
-            className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+            className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
           />
         </div>
         <div>
@@ -61,7 +61,7 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
             value={partySize}
             onChange={(e) => setPartySize(Number(e.target.value) || 1)}
             required
-            className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+            className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
           />
         </div>
       </div>
@@ -76,7 +76,7 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
             name="name"
             type="text"
             required
-            className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+            className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
           />
         </div>
         <div>
@@ -88,7 +88,7 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
             name="email"
             type="email"
             required
-            className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+            className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
           />
         </div>
       </div>
@@ -101,7 +101,7 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
           id="phone"
           name="phone"
           type="tel"
-          className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+          className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
         />
       </div>
 
@@ -114,7 +114,7 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
           name="notes"
           rows={4}
           placeholder="Anything we should know: experience level, timing preferences, etc."
-          className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
+          className="mt-1 w-full rounded-lg border border-swamp-800/60 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700 focus-visible:ring-2 focus-visible:ring-swamp-700 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-100"
         />
       </div>
 
@@ -123,14 +123,19 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
         confirmed by email; nothing is charged yet.
       </p>
 
-      {state.status === "error" && (
-        <p className="text-sm font-medium text-red-700">{state.message}</p>
-      )}
-      {state.status === "success" && (
-        <div className="rounded-lg border border-swamp-700/30 bg-sand-200/60 p-4 text-sm text-swamp-900">
-          <p className="font-medium">{state.message}</p>
-        </div>
-      )}
+      {/* Always rendered so screen readers announce messages when they appear. */}
+      <div role="alert">
+        {state.status === "error" && (
+          <p className="text-sm font-medium text-red-700">{state.message}</p>
+        )}
+      </div>
+      <div role="status">
+        {state.status === "success" && (
+          <div className="rounded-lg border border-swamp-700/30 bg-sand-200/60 p-4 text-sm text-swamp-900">
+            <p className="font-medium">{state.message}</p>
+          </div>
+        )}
+      </div>
 
       <button
         type="submit"

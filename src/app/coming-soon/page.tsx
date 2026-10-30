@@ -19,7 +19,7 @@ export default function ComingSoonPage() {
         className="w-56 sm:w-64"
         priority
       />
-      <p className="mt-10 text-sm font-semibold uppercase tracking-widest text-sunset-600">
+      <p className="mt-10 text-sm font-semibold uppercase tracking-widest text-sunset-700">
         Site coming soon
       </p>
       <h1 className="mt-2 max-w-xl font-display text-3xl font-semibold text-swamp-950 sm:text-4xl">

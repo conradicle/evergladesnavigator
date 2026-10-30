@@ -45,7 +45,7 @@ export default function Home() {
     <div>
       <section className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-16 sm:py-24 lg:flex-row lg:items-center">
         <div className="flex-1 space-y-6">
-          <p className="text-sm font-semibold uppercase tracking-widest text-sunset-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-sunset-700">
             Coming soon to the Florida Everglades
           </p>
           <div className="space-y-3">
@@ -93,7 +93,7 @@ export default function Home() {
               <Link
                 key={item.category}
                 href={item.href}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-swamp-800/10 bg-sand-100 transition hover:-translate-y-1 hover:shadow-lg"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-swamp-800/10 bg-sand-100 transition motion-safe:hover:-translate-y-1 hover:shadow-lg"
               >
                 <PhotoPlaceholder
                   label={item.title}
@@ -105,7 +105,7 @@ export default function Home() {
                     {item.title}
                   </h3>
                   <p className="text-sm text-swamp-800">{item.description}</p>
-                  <span className="inline-block text-sm font-semibold text-sunset-600 group-hover:underline">
+                  <span className="inline-block text-sm font-semibold text-sunset-700 group-hover:underline">
                     See trip options →
                   </span>
                 </div>
@@ -152,7 +152,7 @@ export default function Home() {
         <div className="mt-8 text-center">
           <Link
             href="/tours"
-            className="text-sm font-semibold text-swamp-900 underline underline-offset-4 hover:text-sunset-600"
+            className="text-sm font-semibold text-swamp-900 underline underline-offset-4 hover:text-sunset-700"
           >
             See all trips
           </Link>

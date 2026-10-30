@@ -33,7 +33,7 @@ export default function ToursPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
       <div className="max-w-2xl space-y-4">
-        <p className="text-sm font-semibold uppercase tracking-widest text-sunset-600">
+        <p className="text-sm font-semibold uppercase tracking-widest text-sunset-700">
           Trip offerings
         </p>
         <h1 className="font-display text-4xl font-semibold text-swamp-950">
@@ -73,7 +73,7 @@ export default function ToursPage() {
                       <h3 className="font-display text-xl font-semibold text-swamp-950">
                         {trip.name}
                       </h3>
-                      <span className="whitespace-nowrap text-sm font-semibold text-sunset-600">
+                      <span className="whitespace-nowrap text-sm font-semibold text-sunset-700">
                         Pricing: TBD
                       </span>
                     </div>
@@ -84,7 +84,7 @@ export default function ToursPage() {
                     <ul className="mt-1 space-y-1 text-sm text-swamp-800">
                       {trip.highlights.map((highlight) => (
                         <li key={highlight} className="flex gap-2">
-                          <span className="text-sunset-600">•</span>
+                          <span className="text-sunset-600" aria-hidden="true">•</span>
                           {highlight}
                         </li>
                       ))}

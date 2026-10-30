@@ -21,7 +21,7 @@ export default function AboutPage() {
         priority
       />
 
-      <p className="mt-10 text-center text-sm font-semibold uppercase tracking-widest text-sunset-600">
+      <p className="mt-10 text-center text-sm font-semibold uppercase tracking-widest text-sunset-700">
         About
       </p>
       <h1 className="mt-2 text-center font-display text-3xl font-semibold text-balance text-swamp-950 sm:text-4xl">

@@ -19,6 +19,8 @@
 
   --color-sunset-500: #e08e45;
   --color-sunset-600: #cc7530;
+  /* Text-safe orange: 5.3:1 on sand-100. Use for orange text; keep 500/600 for buttons and decoration. */
+  --color-sunset-700: #9c5418;
 
   --color-ink-900: #17211a;
 
@@ -48,11 +50,17 @@
 
   --color-sunset-500: var(--color-sunset-500);
   --color-sunset-600: var(--color-sunset-600);
+  --color-sunset-700: var(--color-sunset-700);
 
   --color-ink-900: var(--color-ink-900);
 
   --font-sans: var(--font-inter);
   --font-display: var(--font-fraunces);
+}
+
+/* Keep focused or linked-to elements clear of the sticky header. */
+html {
+  scroll-padding-top: 7rem;
 }
 
 body {

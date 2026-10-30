@@ -49,8 +49,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             __html: JSON.stringify(localBusinessJsonLd()).replace(/</g, "\\u003c"),
           }}
         />
+        <a
+          href="#main"
+          className="sr-only rounded-full bg-swamp-800 px-4 py-2 text-sm font-semibold text-sand-100 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60]"
+        >
+          Skip to content
+        </a>
         <Header />
-        <main className="flex-1">{children}</main>
+        <main id="main" tabIndex={-1} className="flex-1 outline-none">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>
