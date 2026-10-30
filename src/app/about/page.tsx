@@ -37,8 +37,8 @@ export default function AboutPage() {
         <div className="space-y-4 text-swamp-800">
           <p>
             {business.captain.name} is a {business.captain.credential} with{" "}
-            {business.captain.experience}. {business.name} is a small guided
-            charter and ecotour operation running trips from{" "}
+            {business.captain.experience}. {business.name} is his small guided
+            charter and ecotour operation, running trips from{" "}
             {business.launchPoints.join(" and ")} into{" "}
             {business.serviceArea.slice(0, -1).join(", ")}, and the{" "}
             {business.serviceArea.at(-1)}. Have a question? Reach out through
@@ -49,9 +49,9 @@ export default function AboutPage() {
             .
           </p>
           <p>
-            Every trip — whether it&apos;s a backcountry fishing charter or a
-            slow ecotour through mangrove tunnels — is guided personally and
-            kept to small groups, with routes built around water levels,
+            Whether it&apos;s a backcountry fishing charter or a slow ecotour
+            through mangrove tunnels, he guides every trip personally and keeps
+            it to a small group, with routes built around water levels,
             weather, and where the wildlife is that day.
           </p>
         </div>
@@ -81,7 +81,7 @@ export default function AboutPage() {
             Flexible trips
           </h2>
           <p className="mt-2 text-sm text-swamp-800">
-            Fishing, sightseeing, or a mix of both — trips are built around
+            Fishing, sightseeing, or a mix of both. Trips are built around
             what you want out of the day.
           </p>
         </div>

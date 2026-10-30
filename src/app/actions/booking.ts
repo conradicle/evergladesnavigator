@@ -58,6 +58,6 @@ export async function submitBookingRequest(
   return {
     status: "success",
     message:
-      "Thanks — your trip request has been received. We'll follow up by email to confirm availability and pricing.",
+      "Thanks, your trip request has been received. We'll follow up by email to confirm availability and pricing.",
   };
 }

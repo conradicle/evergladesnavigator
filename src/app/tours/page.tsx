@@ -41,7 +41,7 @@ export default function ToursPage() {
         </h1>
         <p className="text-swamp-800">
           Pricing is still being finalized and depends on trip length, group
-          size, and season — request a booking and we&apos;ll follow up with
+          size, and season. Request a booking and we&apos;ll follow up with
           exact details before anything is charged.
         </p>
       </div>

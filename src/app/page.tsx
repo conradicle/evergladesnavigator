@@ -1,7 +1,7 @@
 import Link from "next/link";
 import PhotoPlaceholder from "@/components/PhotoPlaceholder";
 import { trips } from "@/lib/tours";
-import { business, launchPointsLabel } from "@/lib/business";
+import { launchPointsLabel } from "@/lib/business";
 
 const FEATURED_CATEGORIES = [
   {
@@ -36,7 +36,7 @@ const HIGHLIGHTS = [
   {
     title: "Flexible trip types",
     description:
-      "Pure fishing, pure sightseeing, or a combination of both — trips are built around what you want to see and do.",
+      "Pure fishing, pure sightseeing, or a combination of both. Trips are built around what you want to see and do.",
   },
 ];
 
@@ -46,13 +46,18 @@ export default function Home() {
       <section className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-16 sm:py-24 lg:flex-row lg:items-center">
         <div className="flex-1 space-y-6">
           <p className="text-sm font-semibold uppercase tracking-widest text-sunset-600">
-            Coming soon to {launchPointsLabel}, {business.state}
+            Coming soon to the Florida Everglades
           </p>
-          <h1 className="font-display text-4xl font-semibold leading-tight text-swamp-950 sm:text-5xl">
-            Guided fishing charters &amp; ecotours through the Everglades
-          </h1>
+          <div className="space-y-3">
+            <h1 className="font-display text-4xl font-semibold leading-tight text-swamp-950 sm:text-5xl">
+              Everglades Fishing Charters &amp; Ecotours from {launchPointsLabel}
+            </h1>
+            <p className="font-display text-xl text-swamp-800 sm:text-2xl">
+              Guided fishing charters &amp; ecotours through the Everglades
+            </p>
+          </div>
           <p className="max-w-xl text-lg text-swamp-800">
-            Everglades Navigator takes small groups deep into the backcountry —
+            Everglades Navigator takes small groups deep into the backcountry
             to fish the flats and mangrove creeks, or to cruise quietly through
             sawgrass marsh and spot the wildlife that calls it home.
           </p>

@@ -38,7 +38,7 @@ export const trips: Trip[] = [
     duration: "8 hours",
     groupSize: "Up to 4 anglers",
     description:
-      "An extended charter that covers more water, more species, and more time on the fish — ideal for serious anglers who want the full Everglades experience.",
+      "An extended charter that covers more water, more species, and more time on the fish. Ideal for serious anglers who want the full Everglades experience.",
     highlights: [
       "Covers backcountry and open-water spots",
       "Lunch break on the water",
@@ -80,7 +80,7 @@ export const trips: Trip[] = [
     duration: "6 hours",
     groupSize: "Up to 4 guests",
     description:
-      "Half fishing trip, half wildlife tour — cast a line in the backcountry, then cruise through mangrove tunnels to see the Everglades' wildlife up close.",
+      "Half fishing trip, half wildlife tour: cast a line in the backcountry, then cruise through mangrove tunnels to see the Everglades' wildlife up close.",
     highlights: [
       "Best of both trip types",
       "Flexible pacing on the water",

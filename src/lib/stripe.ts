@@ -1,5 +1,5 @@
 /**
- * Payment infrastructure placeholder — no live payments yet.
+ * Payment infrastructure placeholder: no live payments yet.
  *
  * This file is the intended integration point for Stripe. To turn it on:
  *

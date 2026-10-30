@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 /**
  * Temporary "coming soon" gate. Rewrites every request to the coming-soon
  * page while leaving the rest of the site (pages, forms, API routes) fully
- * intact in the codebase — nothing is deleted, just made unreachable.
+ * intact in the codebase. Nothing is deleted, just made unreachable.
  * To bring the real site back, delete this file.
  */
 export function proxy(request: NextRequest) {

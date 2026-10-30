@@ -10,7 +10,7 @@ export async function POST() {
     return NextResponse.json(
       {
         error:
-          "Online payments aren't live yet. Use the booking form instead — we'll follow up by email.",
+          "Online payments aren't live yet. Use the booking form instead and we'll follow up by email.",
       },
       { status: 501 },
     );

@@ -28,6 +28,6 @@ export async function submitContactMessage(
 
   return {
     status: "success",
-    message: "Thanks — your message has been received. We'll get back to you soon.",
+    message: "Thanks, your message has been received. We'll get back to you soon.",
   };
 }

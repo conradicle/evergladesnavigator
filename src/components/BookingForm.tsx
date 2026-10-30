@@ -113,14 +113,14 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
           id="notes"
           name="notes"
           rows={4}
-          placeholder="Anything we should know — experience level, timing preferences, etc."
+          placeholder="Anything we should know: experience level, timing preferences, etc."
           className="mt-1 w-full rounded-lg border border-swamp-800/20 bg-sand-100 px-4 py-2 text-swamp-950 outline-none focus:border-swamp-700"
         />
       </div>
 
       <p className="text-sm text-swamp-800">
-        Pricing: <span className="font-semibold text-swamp-950">TBD</span> —
-        confirmed by email, nothing is charged yet.
+        Pricing: <span className="font-semibold text-swamp-950">TBD</span>,
+        confirmed by email; nothing is charged yet.
       </p>
 
       {state.status === "error" && (
@@ -140,7 +140,7 @@ export default function BookingForm({ initialTrip }: { initialTrip?: string }) {
         {pending ? "Sending…" : "Request Booking"}
       </button>
       <p className="text-xs text-swamp-700">
-        No payment is collected here — online checkout is coming soon.
+        No payment is collected here. Online checkout is coming soon.
       </p>
     </form>
   );

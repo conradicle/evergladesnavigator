@@ -1,6 +1,6 @@
 /**
  * Stand-in for real photography. Swap for `next/image` once trip photos
- * are available — see README.md → "Adding photos".
+ * are available. See README.md → "Adding photos".
  */
 export default function PhotoPlaceholder({
   label,
