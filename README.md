@@ -42,6 +42,25 @@ available for other purposes — social profiles, print, etc.) were extracted
 from the original logo artwork, both with transparent backgrounds. Replace
 either file directly (keep the same filename) to swap in an updated logo.
 
+## Snook Outlook (private tool at /snook)
+
+An unlisted snook bite outlook for Captain Adam: 14 day cards, Flamingo
+and Chokoloskee side by side, best fishing windows, and a "why" breakdown.
+It's exempt from the coming-soon gate (`src/proxy.ts`), noindexed, left out
+of the sitemap, and disallowed in `robots.txt`. `/snook-prediction` and
+`/snook-forecast` redirect to it. It can be saved to a phone home screen
+(manifest at `/snook/manifest.webmanifest`, icons in `public/snook/`).
+
+- `src/lib/snook/config.ts`: every weight, threshold, cap, station ID, and
+  the regulations text. Tune the score here.
+- `src/lib/snook/sources.ts`: NOAA CO-OPS tides, NWS forecast grid and
+  observations, NDBC / CO-OPS water temp. Free, server-side, cached 2 hours.
+- `src/lib/snook/score.ts`: the deterministic scoring and summary sentence.
+- `src/lib/snook/outlook.ts`: pulls it all together for the page.
+- `/api/snook` returns the same data as JSON, handy for checking scores.
+
+Set `NWS_CONTACT_EMAIL` in Vercel (see `.env.example`).
+
 ## Adding photos
 
 `src/components/PhotoPlaceholder.tsx` is used everywhere a real photo will

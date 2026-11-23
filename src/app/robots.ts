@@ -6,6 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      // Private tools: unlisted, and noindexed in their own metadata too.
+      disallow: ["/snook", "/api/snook"],
     },
     sitemap: `${business.url}/sitemap.xml`,
   };

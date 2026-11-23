@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { business, launchPointsLabel } from "@/lib/business";
-import { localBusinessJsonLd } from "@/lib/structured-data";
 import "./globals.css";
 
 const inter = Inter({
@@ -42,25 +39,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(localBusinessJsonLd()).replace(/</g, "\\u003c"),
-          }}
-        />
-        <a
-          href="#main"
-          className="sr-only rounded-full bg-swamp-800 px-4 py-2 text-sm font-semibold text-sand-100 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60]"
-        >
-          Skip to content
-        </a>
-        <Header />
-        <main id="main" tabIndex={-1} className="flex-1 outline-none">
-          {children}
-        </main>
-        <Footer />
-      </body>
+      {/* Header, footer, and business schema live in (site)/layout.tsx. */}
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }
