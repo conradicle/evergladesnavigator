@@ -10,7 +10,15 @@ import {
   type LocationId,
 } from "./config";
 import { harvestStatus } from "./regulations";
-import { compassName, inSector, scoreDay, type Factor, type FishingWindow, type FrontSituation } from "./score";
+import {
+  compassName,
+  inSector,
+  rescheduleReason,
+  scoreDay,
+  type Factor,
+  type FishingWindow,
+  type FrontSituation,
+} from "./score";
 import {
   fetchObservations,
   fetchTides,
@@ -30,6 +38,8 @@ export type LocationDay = {
   score: number;
   band: BandLabel;
   cap: { maxScore: number; reason: string } | null;
+  /** Why the trip may need rescheduling (wind cap or strong gusts), or null. */
+  reschedule: string | null;
   factors: Factor[];
   windows: FishingWindow[];
   summary: string;
@@ -232,6 +242,7 @@ async function buildLocation(loc: LocationConfig, now: number, today: DateKey, u
       score: result.score,
       band: result.band,
       cap: result.cap,
+      reschedule: rescheduleReason(wind),
       factors: result.factors,
       windows: result.windows,
       summary: result.summary,

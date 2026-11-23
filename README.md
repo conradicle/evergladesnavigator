@@ -59,7 +59,18 @@ of the sitemap, and disallowed in `robots.txt`. `/snook-prediction` and
 - `src/lib/snook/outlook.ts`: pulls it all together for the page.
 - `/api/snook` returns the same data as JSON, handy for checking scores.
 
-Set `NWS_CONTACT_EMAIL` in Vercel (see `.env.example`).
+**Trip log (`/snook/log`)**: passcode-gated (`SNOOK_LOG_PASSCODE`). Logs a
+trip (date, spot, times, snook count, how the bite was, notes) and attaches
+the forecast for that day as it stood that morning, then shows predicted vs
+actual and exports CSV. Stored in Upstash Redis (`src/lib/snook/store.ts`).
+A Vercel Cron job (`vercel.json`) calls `/api/snook/snapshot` at 11:00 UTC
+daily to save that morning's forecast; it needs `CRON_SECRET`. Without the
+database the log shows "Storage not connected" and the outlook still works.
+
+Tests: `npm test` (vitest) covers scoring, caps, the reschedule flag,
+regulations, time zones, CSV escaping, and the coming-soon gate.
+
+Environment variables are listed in `.env.example`.
 
 ## Adding photos
 

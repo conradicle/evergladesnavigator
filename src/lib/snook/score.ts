@@ -4,6 +4,7 @@ import {
   FACTOR_LABELS,
   FRONT,
   LIGHT,
+  RESCHEDULE,
   SEASON_POINTS,
   TIDE,
   WATER_TEMP,
@@ -85,11 +86,17 @@ export function compassName(dir: number): string {
 
 export function waterTempPoints(f: number): number {
   const w = WATER_TEMP;
+  // Piecewise linear: 0 at zero, 0.5 at half, 1 across the full band.
+  const lerp = (x: number, x0: number, y0: number, x1: number, y1: number) =>
+    y0 + ((y1 - y0) * (x - x0)) / (x1 - x0);
   let frac: number;
   if (f >= w.fullMin && f <= w.fullMax) frac = 1;
-  else if (f < w.fullMin) frac = clamp01((f - w.zeroLow) / (w.fullMin - w.zeroLow));
-  else frac = clamp01((w.zeroHigh - f) / (w.zeroHigh - w.fullMax));
-  return WEIGHTS.waterTemp * frac;
+  else if (f < w.fullMin) {
+    frac = f >= w.halfLow ? lerp(f, w.halfLow, 0.5, w.fullMin, 1) : lerp(f, w.zeroLow, 0, w.halfLow, 0.5);
+  } else {
+    frac = f <= w.halfHigh ? lerp(f, w.fullMax, 1, w.halfHigh, 0.5) : lerp(f, w.halfHigh, 0.5, w.zeroHigh, 0);
+  }
+  return WEIGHTS.waterTemp * clamp01(frac);
 }
 
 export function windPoints(location: LocationId, meanKt: number, dir: number | null): number {
@@ -102,6 +109,18 @@ export function windPoints(location: LocationId, meanKt: number, dir: number | n
     pts = Math.min(pts, p.muddyMaxPoints);
   }
   return pts;
+}
+
+/**
+ * Reason to flag "Trip may be rescheduled": the sustained-wind cap applies
+ * (whether or not it lowered the score) or daylight gusts top the limit.
+ */
+export function rescheduleReason(wind: { meanKt: number; gustKt: number | null } | null): string | null {
+  if (!wind) return null;
+  const reasons: string[] = [];
+  if (wind.meanKt > CAPS.sustainedWind.overKt) reasons.push(`sustained wind near ${Math.round(wind.meanKt)} kt`);
+  if (wind.gustKt != null && wind.gustKt > RESCHEDULE.gustOverKt) reasons.push(`gusts to ${Math.round(wind.gustKt)} kt`);
+  return reasons.length ? reasons.join(", ") : null;
 }
 
 export function frontPoints(s: FrontSituation): number {
@@ -131,6 +150,31 @@ function lightOverlap(start: number, end: number, sunrise: number, sunset: numbe
   const r = LIGHT.minutesFromSunEvent * MINUTE;
   const overlap = (a: number, b: number) => Math.max(0, Math.min(end, b) - Math.max(start, a));
   return (overlap(sunrise - r, sunrise + r) + overlap(sunset - r, sunset + r)) / (end - start);
+}
+
+/**
+ * Light factor: full when the day's strongest flow lands within
+ * LIGHT.minutesFromSunEvent of sunrise or sunset, partial otherwise.
+ */
+export function lightPoints(ex: TideExtreme[], sunrise: number, sunset: number): number | null {
+  const r = LIGHT.minutesFromSunEvent * MINUTE;
+  const rate = (t: number) => tideAt(ex, t, 1)?.ftPerHour ?? null;
+  let peak = 0;
+  let peakT = 0;
+  let nearSun = 0;
+  for (let t = sunrise - r; t <= sunset + r; t += 10 * MINUTE) {
+    const v = rate(t);
+    if (v == null) continue;
+    if (v > peak) {
+      peak = v;
+      peakT = t;
+    }
+    if (Math.abs(t - sunrise) <= r || Math.abs(t - sunset) <= r) nearSun = Math.max(nearSun, v);
+  }
+  if (peak <= 0) return null;
+  const peakNearSun = Math.abs(peakT - sunrise) <= r || Math.abs(peakT - sunset) <= r;
+  const frac = peakNearSun ? 1 : LIGHT.partialMax * (nearSun / peak) ** LIGHT.exponent;
+  return WEIGHTS.light * frac;
 }
 
 export function findWindows(ex: TideExtreme[], sunrise: number, sunset: number, fullRate: number): FishingWindow[] {
@@ -186,10 +230,7 @@ export function scoreDay(i: DayInputs): ScoreResult {
       }
       earned.tideMovement = pts;
     }
-    const r = LIGHT.minutesFromSunEvent * MINUTE;
-    const dawn = meanFlow(i.extremes, i.sunrise - r, i.sunrise + r, fullRate);
-    const dusk = meanFlow(i.extremes, i.sunset - r, i.sunset + r, fullRate);
-    earned.light = WEIGHTS.light * Math.max(dawn, dusk);
+    earned.light = lightPoints(i.extremes, i.sunrise, i.sunset);
   }
 
   if (!i.outlookOnly) {

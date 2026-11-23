@@ -44,12 +44,17 @@ export const FACTOR_LABELS: Record<FactorKey, string> = {
   tideRange: "Tide range",
 };
 
-/** Water temp factor, °F. Full points inside [fullMin, fullMax], linear to 0 at the zero points. */
+/**
+ * Water temp factor, °F. Full points inside [fullMin, fullMax], half points
+ * at halfLow / halfHigh, and zero at zeroLow / zeroHigh, linear in between.
+ */
 export const WATER_TEMP = {
-  fullMin: 70,
-  fullMax: 85,
-  zeroLow: 58,
-  zeroHigh: 95,
+  fullMin: 74,
+  fullMax: 82,
+  halfLow: 68,
+  halfHigh: 86,
+  zeroLow: 62,
+  zeroHigh: 90,
   /** Forecast water temp moves this fraction of the gap toward the 3-day mean air temp each day. */
   relaxPerDay: 0.25,
   /** Running-mean length for forecast air temp, days. */
@@ -69,7 +74,7 @@ export const TIDE = {
    * even when both are at mid-tide. Flamingo's tides run slower, so its
    * bar is lower.
    */
-  fullFlowFtPerHour: { flamingo: 0.55, chokoloskee: 0.75 },
+  fullFlowFtPerHour: { flamingo: 0.78, chokoloskee: 1.0 },
   /** Day's tide range under this (ft) caps the tide factor at half. */
   lowRangeFt: 1.0,
   lowRangeCapFraction: 0.5,
@@ -82,9 +87,16 @@ export const TIDE = {
   windowLightBonus: 0.25,
 } as const;
 
+/**
+ * Light and tide overlap. Full credit only when the day's strongest flow
+ * (peak ft/hour between sunrise and sunset, plus this margin either side)
+ * falls within `minutesFromSunEvent` of sunrise or sunset. Otherwise credit
+ * is partialMax * (best flow near sunrise/sunset / day's peak flow)^exponent.
+ */
 export const LIGHT = {
-  /** Moving tide within this many minutes of sunrise or sunset. */
   minutesFromSunEvent: 90,
+  partialMax: 0.3,
+  exponent: 2,
 } as const;
 
 /**
@@ -114,7 +126,7 @@ export const WIND: Record<"flamingo" | "chokoloskee", WindProfile> = {
     muddyMaxPoints: 3,
   },
   chokoloskee: {
-    fullBelowKt: 10,
+    fullBelowKt: 12,
     zeroAtKt: 25,
     sectors: [
       { from: 293, to: 383, multiplier: 1.15, name: "N/NW" },
@@ -132,17 +144,15 @@ export const FRONT = {
   pointsFrontDay: 3,
   /** Index 0 = 1 day after, 1 = 2 days after, 2 = 3 days after. */
   pointsDaysAfter: [0, 2, 4],
-  pointsQuiet: 6,
+  pointsQuiet: 5,
 } as const;
 
 /** Season points by month (Jan..Dec), out of WEIGHTS.season. */
-export const SEASON_POINTS = [1, 2, 5, 7, 8, 8, 7, 7, 8, 8, 6, 3] as const;
+export const SEASON_POINTS = [1, 2, 5, 7, 8, 8, 7, 7, 8, 8, 5, 3] as const;
 
 /**
- * Hard caps, applied after the factor sum.
- * NOTE: the original spec was cut off at "Sustained wind over 20". The wind
- * caps below are placeholders: over 20 kt daytime sustained wind caps the
- * score at `maxScore` for each location. Tune these.
+ * Hard caps, applied after the factor sum. The wind cap uses daylight mean
+ * sustained wind and also raises the "Trip may be rescheduled" flag.
  */
 export const CAPS = {
   waterBelow: [
@@ -157,6 +167,12 @@ export const CAPS = {
   },
 } as const;
 
+/** "Trip may be rescheduled" shows when the wind cap applies or daylight gusts top this. */
+export const RESCHEDULE = {
+  gustOverKt: 25,
+  label: "Trip may be rescheduled",
+} as const;
+
 /** Lead-time tiers. Day 1 = today. */
 export const CONFIDENCE = [
   { throughDay: 3, plusMinus: 5, label: "High" },
@@ -165,9 +181,9 @@ export const CONFIDENCE = [
 ] as const;
 
 export const BANDS = [
-  { min: 75, label: "Excellent" },
-  { min: 55, label: "Good" },
-  { min: 30, label: "Fair" },
+  { min: 82, label: "Excellent" },
+  { min: 62, label: "Good" },
+  { min: 40, label: "Fair" },
   { min: 0, label: "Tough" },
 ] as const;
 

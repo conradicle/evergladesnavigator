@@ -81,3 +81,8 @@ export function noonOf(key: DateKey): number {
 export const HOUR = 3600_000;
 export const MINUTE = 60_000;
 export const DAY = 86400_000;
+
+/** Today in Everglades time. */
+export function todayKey(): DateKey {
+  return dateKeyOf(Date.now());
+}

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { DAYS_SHOWN, REGULATIONS, WEIGHTS } from "@/lib/snook/config";
+import { DAYS_SHOWN, REGULATIONS, RESCHEDULE, WEIGHTS } from "@/lib/snook/config";
 import type { LocationDay, Outlook, OutlookDay } from "@/lib/snook/outlook";
 import {
   BAND_COLORS,
@@ -86,6 +86,11 @@ export default function SnookOutlook({ outlook }: { outlook: Outlook }) {
       <footer className="mt-8 space-y-2 border-t border-swamp-800/10 pt-4 text-xs text-swamp-700">
         <p className="font-semibold text-swamp-900">Bite outlook estimated from public forecasts. Not a guarantee.</p>
         <p>
+          <a href="/snook/log" className="font-semibold text-sunset-700 underline underline-offset-2">
+            Trip log
+          </a>
+        </p>
+        <p>
           Sources:{" "}
           {outlook.sources
             .map(
@@ -121,13 +126,17 @@ function DayStrip({
           const c = BAND_COLORS[best.band];
           const isSel = d.key === selected;
           const outlookOnly = d.confidence.plusMinus == null;
+          const flagged = d.locations.filter((l) => l.reschedule);
+          const flagWhere = flagged.length === 1 ? ` at ${flagged[0].name}` : "";
           return (
-            <li key={d.key} className="snap-start">
+            <li key={d.key} className="flex snap-start">
               <button
                 type="button"
                 onClick={() => onSelect(d.key)}
                 aria-pressed={isSel}
-                aria-label={`${longDate(d.key)}: best score ${best.score}, ${best.band}${outlookOnly ? ", outlook only" : ""}`}
+                aria-label={`${longDate(d.key)}: best score ${best.score}, ${best.band}${outlookOnly ? ", outlook only" : ""}${
+                  flagged.length ? `. ${RESCHEDULE.label}${flagWhere}` : ""
+                }`}
                 className={`flex w-[4.75rem] flex-col items-center overflow-hidden rounded-xl border text-center transition ${
                   isSel ? "border-swamp-900 ring-2 ring-swamp-900" : "border-swamp-800/15 hover:border-swamp-800/40"
                 } ${outlookOnly ? "border-dashed" : ""}`}
@@ -142,6 +151,14 @@ function DayStrip({
                 </span>
                 <span className="mt-0.5 font-display text-2xl font-semibold text-ink-900">{best.score}</span>
                 <span className="mb-2 text-[11px] font-semibold text-ink-900">{best.band}</span>
+                {flagged.length > 0 && (
+                  <span className="mx-1 mb-1.5 mt-auto rounded-md border border-ink-900/60 bg-sand-100 px-1 py-0.5 text-[10px] font-semibold leading-tight text-ink-900">
+                    {RESCHEDULE.label}
+                    {flagged.length === 1 && (
+                      <span className="block font-normal text-swamp-800">{flagged[0].name}</span>
+                    )}
+                  </span>
+                )}
               </button>
             </li>
           );
@@ -209,6 +226,12 @@ function LocationPanel({ loc, day, isBest }: { loc: LocationDay; day: OutlookDay
             </p>
           </div>
         </div>
+        {loc.reschedule && (
+          <p className="mt-3 rounded-lg border border-ink-900/60 bg-sand-100 px-3 py-2 text-sm text-ink-900" role="note">
+            <span className="font-semibold">{RESCHEDULE.label}</span>
+            <span className="text-swamp-800">: {loc.reschedule}.</span>
+          </p>
+        )}
         {loc.cap && (
           <p className="mt-2 text-xs text-swamp-800">
             Held to {loc.cap.maxScore}: {loc.cap.reason}.
