@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { DeleteTripButton, LoginForm, TripForm } from "@/components/snook/log/LogForms";
 import { BAND_COLORS, shortDate } from "@/components/snook/format";
 import { isLoggedIn, passcodeConfigured } from "@/lib/snook/auth";
-import { BANDS, LOCATIONS, type BandLabel } from "@/lib/snook/config";
+import { BANDS, LOCATIONS, SHARK_AREAS, type BandLabel } from "@/lib/snook/config";
 import { getRedis, listTrips, type Trip } from "@/lib/snook/store";
 import { todayKey } from "@/lib/snook/time";
 import { logout } from "./actions";
@@ -24,12 +24,27 @@ function comparison(t: Trip): string {
   return `${diff > 0 ? "Better" : "Worse"} than forecast by ${n} band${n > 1 ? "s" : ""}`;
 }
 
+function detailLine(t: Trip): string {
+  const d = t.detail;
+  if (!d) return "";
+  return [
+    d.sizes && `Sizes ${d.sizes}`,
+    d.current && `${d.current} current`,
+    d.bait && `bait ${d.bait}`,
+    d.clarity && `${d.clarity} water`,
+    d.lures && `used ${d.lures}`,
+    d.blanks && `nothing at ${d.blanks}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto max-w-3xl px-4 pb-12 pt-5 sm:px-6">
       <div className="flex items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-semibold text-swamp-950">Trip Log</h1>
-        <Link href="/snook" className="text-sm font-semibold text-sunset-700 underline underline-offset-2">
+        <Link href="/snook" className="hidden text-sm font-semibold text-sunset-700 underline underline-offset-2 md:inline">
           Back to outlook
         </Link>
       </div>
@@ -109,7 +124,10 @@ export default async function TripLogPage() {
             Past trips
           </h2>
           {trips.length > 0 && (
-            <a href="/snook/log/export.csv" className="text-sm font-semibold text-sunset-700 underline underline-offset-2">
+            <a
+              href="/snook/log/export.csv"
+              className="inline-flex h-10 items-center rounded-full border border-swamp-800/20 px-4 text-sm font-semibold text-swamp-800 hover:bg-sand-200"
+            >
               Download CSV
             </a>
           )}
@@ -124,7 +142,47 @@ export default async function TripLogPage() {
         {trips.length === 0 && !loadError ? (
           <p className="mt-2 text-sm text-swamp-700">No trips logged yet.</p>
         ) : (
-          <div className="-mx-4 mt-3 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <>
+          <ul className="mt-3 space-y-3 sm:hidden">
+            {trips.map((t) => {
+              const area = SHARK_AREAS.find((a) => a.id === t.detail?.sharkArea);
+              const areaRating = area ? t.shark?.areas[area.id]?.rating : undefined;
+              const notes = [t.otherCatch, t.notes].filter(Boolean).join(". ");
+              return (
+                <li key={t.id} className="rounded-2xl border border-swamp-800/10 bg-[#fffdf7] p-4">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="font-display text-base font-semibold text-swamp-950">{shortDate(t.date)}</p>
+                    <p className="text-sm text-ink-900">{LOCATIONS.find((l) => l.id === t.location)?.name}</p>
+                  </div>
+                  {area && (
+                    <p className="text-right text-xs text-swamp-800">
+                      {area.name}
+                      {areaRating ? `, rated ${areaRating}` : ""}
+                    </p>
+                  )}
+                  <dl className="mt-2 grid grid-cols-2 gap-2 text-sm">
+                    <div className="rounded-lg bg-sand-100 px-3 py-2">
+                      <dt className="text-xs text-swamp-700">Predicted</dt>
+                      <dd>{t.forecast ? <BandText score={t.forecast.score} band={t.forecast.band} /> : <span className="text-swamp-700">None</span>}</dd>
+                    </div>
+                    <div className="rounded-lg bg-sand-100 px-3 py-2">
+                      <dt className="text-xs text-swamp-700">Actual</dt>
+                      <dd>
+                        <BandText band={t.bite} /> <span className="text-swamp-800">· {t.snook} snook</span>
+                      </dd>
+                    </div>
+                  </dl>
+                  <p className="mt-2 text-xs font-semibold text-swamp-900">{comparison(t)}</p>
+                  {notes && <p className="mt-1 text-sm text-swamp-800">{notes}</p>}
+                  {detailLine(t) && <p className="mt-1 text-xs text-swamp-800">{detailLine(t)}</p>}
+                  <div className="mt-3 flex justify-end">
+                    <DeleteTripButton id={t.id} label={shortDate(t.date)} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-3 hidden overflow-x-auto sm:block">
             <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-swamp-800/20 text-xs uppercase tracking-wide text-swamp-700">
@@ -140,7 +198,15 @@ export default async function TripLogPage() {
                 {trips.map((t) => (
                   <tr key={t.id} className="border-b border-swamp-800/10 align-top">
                     <td className="py-2 pr-3 whitespace-nowrap text-ink-900">{shortDate(t.date)}</td>
-                    <td className="py-2 pr-3 text-ink-900">{LOCATIONS.find((l) => l.id === t.location)?.name}</td>
+                    <td className="py-2 pr-3 text-ink-900">
+                      {LOCATIONS.find((l) => l.id === t.location)?.name}
+                      {t.detail?.sharkArea && (
+                        <span className="block text-xs text-swamp-800">
+                          {SHARK_AREAS.find((a) => a.id === t.detail!.sharkArea)?.name}
+                          {t.shark?.areas[t.detail.sharkArea] ? `, rated ${t.shark.areas[t.detail.sharkArea]!.rating}` : ""}
+                        </span>
+                      )}
+                    </td>
                     <td className="py-2 pr-3 whitespace-nowrap">
                       {t.forecast ? (
                         <BandText score={t.forecast.score} band={t.forecast.band} />
@@ -156,6 +222,7 @@ export default async function TripLogPage() {
                     </td>
                     <td className="py-2 pr-3 text-swamp-800">
                       {[t.otherCatch, t.notes].filter(Boolean).join(". ")}
+                      {t.detail && detailLine(t) && <span className="block text-xs">{detailLine(t)}</span>}
                     </td>
                     <td className="py-2">
                       <DeleteTripButton id={t.id} label={shortDate(t.date)} />
@@ -165,11 +232,15 @@ export default async function TripLogPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </section>
 
       <form action={logout} className="mt-8">
-        <button type="submit" className="text-xs font-semibold text-swamp-700 underline underline-offset-2">
+        <button
+          type="submit"
+          className="inline-flex h-10 items-center rounded-full border border-swamp-800/20 px-4 text-sm font-semibold text-swamp-800 hover:bg-sand-200"
+        >
           Sign out of trip log
         </button>
       </form>

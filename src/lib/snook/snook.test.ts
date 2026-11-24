@@ -56,6 +56,11 @@ describe("wind factor", () => {
   it("penalizes north and northwest wind harder at Flamingo", () => {
     expect(windPoints("flamingo", 12, 315)).toBeLessThan(windPoints("flamingo", 12, 135));
   });
+  it("starts at 10 kt at Lostmans and penalizes onshore west wind", () => {
+    expect(windPoints("lostmans", 10, 120)).toBe(WEIGHTS.wind);
+    expect(windPoints("lostmans", 11, 120)).toBeLessThan(WEIGHTS.wind);
+    expect(windPoints("lostmans", 14, 270)).toBeLessThan(windPoints("lostmans", 14, 120));
+  });
 });
 
 describe("reschedule flag", () => {
@@ -180,6 +185,8 @@ describe("csv", () => {
     expect(csvCell("=HYPERLINK(1)")).toBe("'=HYPERLINK(1)");
     expect(csvCell(null)).toBe("");
     expect(csvCell(12)).toBe("12");
+    expect(csvCell(-0.03)).toBe("-0.03");
+    expect(csvCell("-1+2")).toBe("'-1+2");
   });
 });
 

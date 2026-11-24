@@ -1,6 +1,7 @@
 import { Redis } from "@upstash/redis";
-import type { BandLabel, LocationId } from "./config";
+import type { BAIT_OPTIONS, BandLabel, CLARITY_OPTIONS, CURRENT_OPTIONS, LocationId, SharkAreaId } from "./config";
 import type { Outlook } from "./outlook";
+import type { SharkSnapshot } from "./shark";
 import { addDays, type DateKey } from "./time";
 
 /**
@@ -21,6 +22,7 @@ const KEYS = {
   tripIndex: "snook:trips", // sorted set: member = trip id, score = trip date (ms)
   trip: (id: string) => `snook:trip:${id}`,
   snapshot: (date: DateKey) => `snook:snapshot:${date}`,
+  shark: (date: DateKey) => `snook:shark:${date}`,
   loginAttempts: (ip: string) => `snook:login:${ip}`,
 };
 
@@ -56,6 +58,20 @@ export type Trip = {
   otherCatch: string;
   notes: string;
   forecast: ForecastSnapshot | null;
+  /** Added with the Shark River page (Nov 2026); older trips don't have these. */
+  detail?: TripDetail;
+  /** Shark River conditions for the trip date, saved when a Shark River area is picked. */
+  shark?: SharkSnapshot | null;
+};
+
+export type TripDetail = {
+  sharkArea: SharkAreaId | null;
+  sizes: string;
+  current: (typeof CURRENT_OPTIONS)[number] | "";
+  bait: (typeof BAIT_OPTIONS)[number] | "";
+  clarity: (typeof CLARITY_OPTIONS)[number] | "";
+  lures: string;
+  blanks: string;
 };
 
 type StoredDay = { key: DateKey; lead: number; confidence: string; locations: Record<LocationId, Omit<ForecastSnapshot, "source" | "takenAt" | "forDate" | "lead" | "confidence">> };
@@ -122,6 +138,15 @@ export async function findSnapshotForecast(
     if (f) return f;
   }
   return null;
+}
+
+export async function saveSharkSnapshot(redis: Redis, snap: SharkSnapshot): Promise<void> {
+  await redis.set(KEYS.shark(snap.forDate), snap, { ex: SNAPSHOT_TTL_SECONDS });
+}
+
+/** Shark River conditions saved that morning (hydrology for that date only). */
+export async function findSharkSnapshot(redis: Redis, date: DateKey): Promise<SharkSnapshot | null> {
+  return (await redis.get<SharkSnapshot>(KEYS.shark(date))) ?? null;
 }
 
 export async function saveTrip(redis: Redis, trip: Trip): Promise<void> {
