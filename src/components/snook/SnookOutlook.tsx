@@ -50,14 +50,14 @@ export default function SnookOutlook({ outlook }: { outlook: Outlook }) {
   const day = days.find((d) => d.key === selected) ?? days[0];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-10 pt-5 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 pb-10 pt-5 sm:px-6">
       <header className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Image src="/logo-icon.png" alt="" width={36} height={36} className="h-9 w-9" priority />
           <div>
             <h1 className="font-display text-2xl font-semibold leading-tight text-swamp-950">Snook Outlook</h1>
             <p className="text-xs text-swamp-700">
-              Flamingo &amp; Chokoloskee
+              Flamingo, Chokoloskee &amp; Lostmans
               {outlook.weatherIssuedAt && <> · forecast issued {fmtTime(outlook.weatherIssuedAt)}</>}
             </p>
           </div>
@@ -186,7 +186,7 @@ function DayView({ day }: { day: OutlookDay }) {
           Water temp, wind, and fronts sit at neutral.
         </p>
       )}
-      <div className="mt-3 grid gap-4 md:grid-cols-2">
+      <div className="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {day.locations.map((loc) => (
           <LocationPanel key={loc.id} loc={loc} day={day} isBest={day.best === loc.id} />
         ))}
@@ -209,7 +209,7 @@ function LocationPanel({ loc, day, isBest }: { loc: LocationDay; day: OutlookDay
           <h3 className="font-display text-lg font-semibold text-swamp-950">{loc.name}</h3>
           {isBest && (
             <span className="rounded-full border border-sunset-600 px-2.5 py-0.5 text-xs font-semibold text-sunset-700">
-              Better pick
+              Best pick
             </span>
           )}
         </div>
@@ -417,8 +417,8 @@ function Regulations({ harvest }: { harvest: Outlook["harvest"] }) {
         </p>
       )}
       <p className="mt-3 text-sm text-swamp-800">
-        Flamingo and Chokoloskee are both in FWC&apos;s Southwest snook region, which includes all of Everglades
-        National Park.
+        Flamingo, Chokoloskee, and Lostmans are all in FWC&apos;s Southwest snook region, which includes all of
+        Everglades National Park.
       </p>
       <ul className="mt-2 list-disc space-y-0.5 pl-5 text-sm text-ink-900">
         <li>Harvest closed {REGULATIONS.closedSeasons.map((s) => s.label).join(" and ")}</li>

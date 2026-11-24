@@ -60,7 +60,7 @@ export function TripForm({ today }: { today: string }) {
           <input id="date" name="date" type="date" defaultValue={today} max={today} required className={field} />
         </div>
         <fieldset>
-          <legend className={label}>Launch point</legend>
+          <legend className={label}>Spot</legend>
           <div className="mt-1 space-y-1">
             {LOCATIONS.map((l, i) => (
               <label key={l.id} className="flex items-center gap-2 text-sm text-ink-900">

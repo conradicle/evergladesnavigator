@@ -44,8 +44,8 @@ either file directly (keep the same filename) to swap in an updated logo.
 
 ## Snook Outlook (private tool at /snook)
 
-An unlisted snook bite outlook for Captain Adam: 14 day cards, Flamingo
-and Chokoloskee side by side, best fishing windows, and a "why" breakdown.
+An unlisted snook bite outlook for Captain Adam: 14 day cards, Flamingo,
+Chokoloskee, and Lostmans side by side, best fishing windows, and a "why" breakdown.
 It's exempt from the coming-soon gate (`src/proxy.ts`), noindexed, left out
 of the sitemap, and disallowed in `robots.txt`. `/snook-prediction` and
 `/snook-forecast` redirect to it. It can be saved to a phone home screen

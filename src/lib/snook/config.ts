@@ -72,9 +72,10 @@ export const TIDE = {
    * Rate of rise or fall (ft/hour) that earns full flow credit. Flow is
    * actual water movement, so a strong spring tide beats a weak neap tide
    * even when both are at mid-tide. Flamingo's tides run slower, so its
-   * bar is lower.
+   * bar is lower. Lostmans runs a bit faster than Chokoloskee (median peak
+   * rate 0.73 vs 0.63 ft/hour in Nov 2026 predictions), so its bar is higher.
    */
-  fullFlowFtPerHour: { flamingo: 0.78, chokoloskee: 1.0 },
+  fullFlowFtPerHour: { flamingo: 0.78, chokoloskee: 1.0, lostmans: 1.15 },
   /** Day's tide range under this (ft) caps the tide factor at half. */
   lowRangeFt: 1.0,
   lowRangeCapFraction: 0.5,
@@ -113,7 +114,7 @@ export type WindProfile = {
   muddyMaxPoints?: number;
 };
 
-export const WIND: Record<"flamingo" | "chokoloskee", WindProfile> = {
+export const WIND: Record<LocationId, WindProfile> = {
   flamingo: {
     fullBelowKt: 8,
     zeroAtKt: 18,
@@ -130,6 +131,16 @@ export const WIND: Record<"flamingo" | "chokoloskee", WindProfile> = {
     zeroAtKt: 25,
     sectors: [
       { from: 293, to: 383, multiplier: 1.15, name: "N/NW" },
+    ],
+  },
+  // Lostmans means a run down the open Gulf coast from Chokoloskee, so it
+  // feels wind sooner than Chokoloskee, and W through N (onshore) the most.
+  // Starting guesses: tune these once trips are logged.
+  lostmans: {
+    fullBelowKt: 10,
+    zeroAtKt: 22,
+    sectors: [
+      { from: 248, to: 383, multiplier: 1.2, name: "W through N" },
     ],
   },
 };
@@ -162,7 +173,7 @@ export const CAPS = {
   waterDrop48h: { dropF: 8, maxScore: 40, reason: "water dropped 8°F+ in 48 hours" },
   sustainedWind: {
     overKt: 20,
-    maxScore: { flamingo: 30, chokoloskee: 45 },
+    maxScore: { flamingo: 30, chokoloskee: 45, lostmans: 40 },
     reason: "sustained wind over 20 kt",
   },
 } as const;
@@ -190,7 +201,7 @@ export const BANDS = [
 export type BandLabel = (typeof BANDS)[number]["label"];
 
 /** Launch points and their data sources, nearest first. */
-export type LocationId = "flamingo" | "chokoloskee";
+export type LocationId = "flamingo" | "chokoloskee" | "lostmans";
 
 export type LocationConfig = {
   id: LocationId;
@@ -241,6 +252,23 @@ export const LOCATIONS: LocationConfig[] = [
       // Naples (8725110) is not reporting water temp as of Nov 2026.
       { id: "8725520", name: "Fort Myers" },
     ],
+    obsStation: "KAPF",
+  },
+  {
+    id: "lostmans",
+    name: "Lostmans",
+    lat: 25.55,
+    lon: -81.21,
+    tideStations: [
+      { id: "8724842", name: "Lostmans River entrance" },
+      { id: "8724891", name: "Chatham River entrance" },
+    ],
+    ndbcStations: [
+      { id: "LMRF1", name: "Lostmans River" },
+      { id: "WPLF1", name: "Watson Place" },
+      { id: "CNBF1", name: "Cannon Bay" },
+    ],
+    coopsWaterStations: [{ id: "8725520", name: "Fort Myers" }],
     obsStation: "KAPF",
   },
 ];

@@ -8,7 +8,7 @@ import type { Metadata, Viewport } from "next";
  */
 export const metadata: Metadata = {
   title: "Snook Outlook",
-  description: "Daily snook bite outlook for Flamingo and Chokoloskee.",
+  description: "Daily snook bite outlook for Flamingo, Chokoloskee, and Lostmans.",
   robots: {
     index: false,
     follow: false,

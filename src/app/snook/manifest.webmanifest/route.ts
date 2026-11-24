@@ -9,7 +9,7 @@ export function GET() {
   const manifest = {
     name: "Snook Outlook",
     short_name: "Snook Outlook",
-    description: "Daily snook bite outlook for Flamingo and Chokoloskee.",
+    description: "Daily snook bite outlook for Flamingo, Chokoloskee, and Lostmans.",
     id: "/snook",
     start_url: "/snook",
     scope: "/snook",

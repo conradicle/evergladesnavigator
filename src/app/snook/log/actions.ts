@@ -62,7 +62,7 @@ export async function addTrip(_prev: FormState, fd: FormData): Promise<FormState
   const notes = String(fd.get("notes") ?? "").trim().slice(0, 2000);
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > addDays(today, 1)) return { error: "Pick the trip date (today or earlier)." };
-  if (!LOCATIONS.some((l) => l.id === location)) return { error: "Pick Flamingo or Chokoloskee." };
+  if (!LOCATIONS.some((l) => l.id === location)) return { error: "Pick Flamingo, Chokoloskee, or Lostmans." };
   if ((startTime && !TIME_RE.test(startTime)) || (endTime && !TIME_RE.test(endTime))) return { error: "Times look off." };
   const snook = Number(snookRaw);
   if (snookRaw === "" || !Number.isInteger(snook) || snook < 0 || snook > 500) return { error: "Enter how many snook (0 is fine)." };
