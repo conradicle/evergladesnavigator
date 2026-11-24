@@ -25,6 +25,8 @@ const STALE_FORECAST_MS = 6 * 3600_000;
 export default function SnookOutlook({ outlook }: { outlook: Outlook }) {
   const router = useRouter();
   const [selected, setSelected] = useState(outlook.today);
+  // Phones show one spot at a time; null follows each day's best pick until he chooses one.
+  const [spot, setSpot] = useState<LocationDay["id"] | null>(null);
 
   useEffect(() => {
     // A saved home-screen app has no reload button and can sit open for
@@ -51,11 +53,13 @@ export default function SnookOutlook({ outlook }: { outlook: Outlook }) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-10 pt-5 sm:px-6">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <Image src="/logo-icon.png" alt="" width={36} height={36} className="h-9 w-9" priority />
-          <div>
-            <h1 className="whitespace-nowrap font-display text-2xl font-semibold leading-tight text-swamp-950">Snook Outlook</h1>
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <Image src="/logo-icon.png" alt="" width={36} height={36} className="hidden h-9 w-9 shrink-0 min-[360px]:block" priority />
+          <div className="min-w-0">
+            <h1 className="whitespace-nowrap font-display text-xl font-semibold leading-tight text-swamp-950 min-[360px]:text-2xl">
+              Snook Outlook
+            </h1>
             <p className="text-xs text-swamp-700">
               Flamingo, Chokoloskee &amp; Lostmans
               {outlook.weatherIssuedAt && <> · forecast issued {fmtTime(outlook.weatherIssuedAt)}</>}
@@ -65,14 +69,20 @@ export default function SnookOutlook({ outlook }: { outlook: Outlook }) {
         <div className="flex shrink-0 items-center gap-2">
           <a
             href="/snook/shark-river"
-            className="rounded-full border border-swamp-800/20 px-3 py-1.5 text-xs font-semibold text-swamp-800 transition hover:bg-sand-200"
+            className="hidden h-10 items-center rounded-full border border-swamp-800/20 px-4 text-sm font-semibold text-swamp-800 transition hover:bg-sand-200 md:inline-flex"
           >
             Shark River
+          </a>
+          <a
+            href="/snook/log"
+            className="hidden h-10 items-center rounded-full border border-swamp-800/20 px-4 text-sm font-semibold text-swamp-800 transition hover:bg-sand-200 md:inline-flex"
+          >
+            Trip log
           </a>
           <button
             type="button"
             onClick={() => router.refresh()}
-            className="rounded-full border border-swamp-800/20 px-3 py-1.5 text-xs font-semibold text-swamp-800 transition hover:bg-sand-200"
+            className="inline-flex h-10 items-center rounded-full border border-swamp-800/20 px-4 text-sm font-semibold text-swamp-800 transition hover:bg-sand-200 active:bg-sand-200"
           >
             Refresh
           </button>
@@ -87,7 +97,7 @@ export default function SnookOutlook({ outlook }: { outlook: Outlook }) {
 
       <DayStrip days={days} selected={day?.key} onSelect={setSelected} />
 
-      {day && <DayView day={day} />}
+      {day && <DayView day={day} spot={spot ?? day.best ?? day.locations[0]?.id} onSpot={setSpot} />}
 
       <Regulations harvest={outlook.harvest} />
 
@@ -180,7 +190,15 @@ function DayStrip({
   );
 }
 
-function DayView({ day }: { day: OutlookDay }) {
+function DayView({
+  day,
+  spot,
+  onSpot,
+}: {
+  day: OutlookDay;
+  spot: LocationDay["id"] | undefined;
+  onSpot: (id: LocationDay["id"]) => void;
+}) {
   const outlookOnly = day.confidence.plusMinus == null;
   return (
     <section aria-labelledby="day-heading" className="mt-4">
@@ -198,12 +216,61 @@ function DayView({ day }: { day: OutlookDay }) {
           Water temp, wind, and fronts sit at neutral.
         </p>
       )}
-      <div className="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <SpotSwitcher day={day} spot={spot} onSpot={onSpot} />
+      <div className="mt-3 grid gap-4 lg:grid-cols-3">
         {day.locations.map((loc) => (
-          <LocationPanel key={loc.id} loc={loc} day={day} isBest={day.best === loc.id} />
+          <div key={loc.id} className={loc.id === spot ? "" : "hidden lg:block"}>
+            <LocationPanel loc={loc} day={day} isBest={day.best === loc.id} />
+          </div>
         ))}
       </div>
     </section>
+  );
+}
+
+/** Phone and tablet: pick which spot's panel shows. Sticks to the top while scrolling the panel. */
+function SpotSwitcher({
+  day,
+  spot,
+  onSpot,
+}: {
+  day: OutlookDay;
+  spot: LocationDay["id"] | undefined;
+  onSpot: (id: LocationDay["id"]) => void;
+}) {
+  return (
+    <div
+      className="sticky z-30 -mx-4 mt-3 bg-[#fbf7ec]/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6 lg:hidden"
+      style={{ top: "env(safe-area-inset-top)" }}
+    >
+      <div role="group" aria-label="Pick a spot" className="grid grid-cols-3 gap-2">
+        {day.locations.map((l) => {
+          const active = l.id === spot;
+          const c = BAND_COLORS[l.band];
+          return (
+            <button
+              key={l.id}
+              type="button"
+              aria-pressed={active}
+              onClick={() => {
+                onSpot(l.id);
+                window.scrollTo({ top: Math.min(window.scrollY, document.getElementById("day-heading")!.getBoundingClientRect().top + window.scrollY - 8) });
+              }}
+              className={`flex min-h-14 flex-col items-center justify-center rounded-xl border px-1 py-1.5 text-center transition ${
+                active ? "border-swamp-900 bg-[#fffdf7] ring-2 ring-swamp-900" : "border-swamp-800/15 bg-[#fffdf7]/70"
+              }`}
+            >
+              <span className="text-xs font-semibold text-swamp-900">{l.name}</span>
+              <span className="flex items-center gap-1 text-sm font-semibold text-ink-900">
+                <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: c.swatch }} aria-hidden="true" />
+                {l.score} <span className="font-normal">{l.band}</span>
+              </span>
+              {l.reschedule && <span className="text-[10px] font-semibold leading-tight text-ink-900">{RESCHEDULE.label}</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

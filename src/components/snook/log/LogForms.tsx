@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { addTrip, login, removeTrip, type FormState } from "@/app/snook/log/actions";
 import { BAIT_OPTIONS, BANDS, CLARITY_OPTIONS, CURRENT_OPTIONS, LOCATIONS, SHARK_AREAS } from "@/lib/snook/config";
 import { BAND_COLORS } from "../format";
 
-const field = "mt-1 w-full rounded-lg border border-swamp-800/25 bg-white px-3 py-2 text-base text-ink-900";
+// text-base (16px) keeps iPhone Safari from zooming into fields; min-h-12 keeps them easy to tap.
+const field = "mt-1 block min-h-12 w-full rounded-xl border border-swamp-800/25 bg-white px-3 py-2 text-base text-ink-900";
 const label = "block text-sm font-semibold text-swamp-900";
 
 function Message({ state }: { state: FormState }) {
@@ -40,7 +41,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-swamp-800 px-5 py-2 text-sm font-semibold text-sand-100 transition hover:bg-swamp-700 disabled:opacity-60"
+        className="h-12 w-full rounded-full bg-swamp-800 px-6 text-base font-semibold text-sand-100 transition hover:bg-swamp-700 disabled:opacity-60 sm:w-auto"
       >
         {pending ? "Checking…" : "Open trip log"}
       </button>
@@ -48,48 +49,105 @@ export function LoginForm() {
   );
 }
 
+const choice =
+  "flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-swamp-800/20 bg-white px-2 text-sm font-semibold text-ink-900 has-[:checked]:border-swamp-900 has-[:checked]:bg-sand-100 has-[:checked]:ring-2 has-[:checked]:ring-swamp-900 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-sunset-600";
+
 export function TripForm({ today }: { today: string }) {
   const [state, action, pending] = useActionState(addTrip, {});
+  const formRef = useRef<HTMLFormElement>(null);
+  const [snook, setSnook] = useState("");
+  const [, startTransition] = useTransition();
+
+  // Clear the form only after a successful save; on an error keep what he typed.
+  // (A plain form action would reset the fields either way.)
+  useEffect(() => {
+    if (!state.ok) return;
+    formRef.current?.reset();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resetting a controlled field to match the form reset
+    setSnook("");
+    formRef.current?.querySelector("[role=status]")?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [state]);
+
+  const bump = (d: number) => setSnook((s) => String(Math.min(500, Math.max(0, (Number(s) || 0) + d))));
+
   return (
-    <form action={action} className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label htmlFor="date" className={label}>
-            Date
-          </label>
-          <input id="date" name="date" type="date" defaultValue={today} max={today} required className={field} />
-        </div>
-        <fieldset>
-          <legend className={label}>Spot</legend>
-          <div className="mt-1 space-y-1">
-            {LOCATIONS.map((l, i) => (
-              <label key={l.id} className="flex items-center gap-2 text-sm text-ink-900">
-                <input type="radio" name="location" value={l.id} defaultChecked={i === 0} className="h-4 w-4" />
-                {l.name}
-              </label>
-            ))}
-          </div>
-        </fieldset>
+    <form
+      ref={formRef}
+      onSubmit={(e) => {
+        e.preventDefault();
+        const fd = new FormData(e.currentTarget);
+        startTransition(() => action(fd));
+      }}
+      className="space-y-5"
+    >
+      <div>
+        <label htmlFor="date" className={label}>
+          Date
+        </label>
+        <input id="date" name="date" type="date" defaultValue={today} max={today} required className={field} />
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <fieldset>
+        <legend className={label}>Spot</legend>
+        <div className="mt-1 grid grid-cols-3 gap-2">
+          {LOCATIONS.map((l, i) => (
+            <label key={l.id} className={choice}>
+              <input type="radio" name="location" value={l.id} defaultChecked={i === 0} className="sr-only" />
+              {l.name}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <div className="grid grid-cols-2 gap-3">
         <div>
           <label htmlFor="startTime" className={label}>
-            Start
+            Start <span className="font-normal text-swamp-700">(optional)</span>
           </label>
           <input id="startTime" name="startTime" type="time" className={field} />
         </div>
         <div>
           <label htmlFor="endTime" className={label}>
-            End
+            End <span className="font-normal text-swamp-700">(optional)</span>
           </label>
           <input id="endTime" name="endTime" type="time" className={field} />
         </div>
-        <div>
-          <label htmlFor="snook" className={label}>
-            Snook
-          </label>
-          <input id="snook" name="snook" type="number" inputMode="numeric" min={0} max={500} required className={field} />
+      </div>
+
+      <div>
+        <label htmlFor="snook" className={label}>
+          Snook caught
+        </label>
+        <div className="mt-1 flex items-stretch gap-2">
+          <button
+            type="button"
+            onClick={() => bump(-1)}
+            aria-label="One fewer snook"
+            className="h-12 w-14 shrink-0 rounded-xl border border-swamp-800/25 bg-white text-2xl font-semibold text-ink-900 active:bg-sand-200"
+          >
+            −
+          </button>
+          <input
+            id="snook"
+            name="snook"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={500}
+            required
+            value={snook}
+            onChange={(e) => setSnook(e.target.value)}
+            placeholder="0"
+            className="h-12 w-full min-w-0 rounded-xl border border-swamp-800/25 bg-white px-3 text-center text-xl font-semibold text-ink-900"
+          />
+          <button
+            type="button"
+            onClick={() => bump(1)}
+            aria-label="One more snook"
+            className="h-12 w-14 shrink-0 rounded-xl border border-swamp-800/25 bg-white text-2xl font-semibold text-ink-900 active:bg-sand-200"
+          >
+            +
+          </button>
         </div>
       </div>
 
@@ -99,9 +157,9 @@ export function TripForm({ today }: { today: string }) {
           {[...BANDS].reverse().map((b) => (
             <label
               key={b.label}
-              className="flex items-center gap-2 rounded-lg border border-swamp-800/20 bg-white px-3 py-2 text-sm text-ink-900 has-[:checked]:border-swamp-900 has-[:checked]:ring-2 has-[:checked]:ring-swamp-900"
+              className={choice}
             >
-              <input type="radio" name="bite" value={b.label} required className="h-4 w-4" />
+              <input type="radio" name="bite" value={b.label} required className="sr-only" />
               <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: BAND_COLORS[b.label].swatch }} aria-hidden="true" />
               {b.label}
             </label>
@@ -122,11 +180,16 @@ export function TripForm({ today }: { today: string }) {
         <textarea id="notes" name="notes" maxLength={2000} rows={3} className={field} placeholder="Anything else worth remembering" />
       </div>
 
-      <details className="rounded-xl border border-swamp-800/15 bg-white/60 p-3">
-        <summary className="cursor-pointer text-sm font-semibold text-swamp-900">
-          More detail <span className="font-normal text-swamp-700">(optional, helps tune the ratings)</span>
+      <details className="group rounded-xl border border-swamp-800/15 bg-white/60">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-sm font-semibold text-swamp-900">
+          <span>
+            More detail <span className="font-normal text-swamp-700">(optional, helps tune the ratings)</span>
+          </span>
+          <span aria-hidden="true" className="text-lg transition group-open:rotate-180">
+            ▾
+          </span>
         </summary>
-        <div className="mt-3 space-y-3">
+        <div className="space-y-4 px-3 pb-4 pt-1">
           <div>
             <label htmlFor="sharkArea" className={label}>
               Shark River area
@@ -146,11 +209,9 @@ export function TripForm({ today }: { today: string }) {
             </label>
             <input id="sizes" name="sizes" maxLength={100} className={field} placeholder={'24", 27", 31"'} />
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <OptionSelect id="current" title="Current" options={CURRENT_OPTIONS} />
-            <OptionSelect id="bait" title="Bait" options={BAIT_OPTIONS} />
-            <OptionSelect id="clarity" title="Water" options={CLARITY_OPTIONS} />
-          </div>
+          <ChipGroup name="current" title="Current" options={CURRENT_OPTIONS} />
+          <ChipGroup name="bait" title="Bait around" options={BAIT_OPTIONS} />
+          <ChipGroup name="clarity" title="Water" options={CLARITY_OPTIONS} />
           <div>
             <label htmlFor="lures" className={label}>
               Lures or bait used
@@ -170,7 +231,7 @@ export function TripForm({ today }: { today: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-swamp-800 px-5 py-2.5 text-sm font-semibold text-sand-100 transition hover:bg-swamp-700 disabled:opacity-60"
+        className="h-12 w-full rounded-full bg-swamp-800 px-6 text-base font-semibold text-sand-100 transition hover:bg-swamp-700 active:bg-swamp-700 disabled:opacity-60 sm:w-auto"
       >
         {pending ? "Saving…" : "Save trip"}
       </button>
@@ -178,21 +239,20 @@ export function TripForm({ today }: { today: string }) {
   );
 }
 
-function OptionSelect({ id, title, options }: { id: string; title: string; options: readonly string[] }) {
+/** Tap-to-pick chips; leaving all unpicked skips the field. */
+function ChipGroup({ name, title, options }: { name: string; title: string; options: readonly string[] }) {
   return (
-    <div>
-      <label htmlFor={id} className={label}>
-        {title}
-      </label>
-      <select id={id} name={id} defaultValue="" className={field}>
-        <option value="">Skip</option>
+    <fieldset>
+      <legend className={label}>{title}</legend>
+      <div className="mt-1 flex flex-wrap gap-2">
         {options.map((o) => (
-          <option key={o} value={o}>
+          <label key={o} className={`${choice} min-h-11 px-4 font-normal`}>
+            <input type="radio" name={name} value={o} className="sr-only" />
             {o[0].toUpperCase() + o.slice(1)}
-          </option>
+          </label>
         ))}
-      </select>
-    </div>
+      </div>
+    </fieldset>
   );
 }
 
@@ -205,7 +265,10 @@ export function DeleteTripButton({ id, label: what }: { id: string; label: strin
       }}
     >
       <input type="hidden" name="id" value={id} />
-      <button type="submit" className="text-xs font-semibold text-swamp-700 underline underline-offset-2 hover:text-ink-900">
+      <button
+        type="submit"
+        className="inline-flex h-10 items-center rounded-full border border-swamp-800/20 px-4 text-sm font-semibold text-swamp-800 hover:bg-sand-200 active:bg-sand-200"
+      >
         Delete
       </button>
     </form>

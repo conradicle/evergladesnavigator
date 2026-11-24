@@ -44,7 +44,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div className="mx-auto max-w-3xl px-4 pb-12 pt-5 sm:px-6">
       <div className="flex items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-semibold text-swamp-950">Trip Log</h1>
-        <Link href="/snook" className="text-sm font-semibold text-sunset-700 underline underline-offset-2">
+        <Link href="/snook" className="hidden text-sm font-semibold text-sunset-700 underline underline-offset-2 md:inline">
           Back to outlook
         </Link>
       </div>
@@ -124,7 +124,10 @@ export default async function TripLogPage() {
             Past trips
           </h2>
           {trips.length > 0 && (
-            <a href="/snook/log/export.csv" className="text-sm font-semibold text-sunset-700 underline underline-offset-2">
+            <a
+              href="/snook/log/export.csv"
+              className="inline-flex h-10 items-center rounded-full border border-swamp-800/20 px-4 text-sm font-semibold text-swamp-800 hover:bg-sand-200"
+            >
               Download CSV
             </a>
           )}
@@ -139,7 +142,47 @@ export default async function TripLogPage() {
         {trips.length === 0 && !loadError ? (
           <p className="mt-2 text-sm text-swamp-700">No trips logged yet.</p>
         ) : (
-          <div className="-mx-4 mt-3 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <>
+          <ul className="mt-3 space-y-3 sm:hidden">
+            {trips.map((t) => {
+              const area = SHARK_AREAS.find((a) => a.id === t.detail?.sharkArea);
+              const areaRating = area ? t.shark?.areas[area.id]?.rating : undefined;
+              const notes = [t.otherCatch, t.notes].filter(Boolean).join(". ");
+              return (
+                <li key={t.id} className="rounded-2xl border border-swamp-800/10 bg-[#fffdf7] p-4">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="font-display text-base font-semibold text-swamp-950">{shortDate(t.date)}</p>
+                    <p className="text-sm text-ink-900">{LOCATIONS.find((l) => l.id === t.location)?.name}</p>
+                  </div>
+                  {area && (
+                    <p className="text-right text-xs text-swamp-800">
+                      {area.name}
+                      {areaRating ? `, rated ${areaRating}` : ""}
+                    </p>
+                  )}
+                  <dl className="mt-2 grid grid-cols-2 gap-2 text-sm">
+                    <div className="rounded-lg bg-sand-100 px-3 py-2">
+                      <dt className="text-xs text-swamp-700">Predicted</dt>
+                      <dd>{t.forecast ? <BandText score={t.forecast.score} band={t.forecast.band} /> : <span className="text-swamp-700">None</span>}</dd>
+                    </div>
+                    <div className="rounded-lg bg-sand-100 px-3 py-2">
+                      <dt className="text-xs text-swamp-700">Actual</dt>
+                      <dd>
+                        <BandText band={t.bite} /> <span className="text-swamp-800">· {t.snook} snook</span>
+                      </dd>
+                    </div>
+                  </dl>
+                  <p className="mt-2 text-xs font-semibold text-swamp-900">{comparison(t)}</p>
+                  {notes && <p className="mt-1 text-sm text-swamp-800">{notes}</p>}
+                  {detailLine(t) && <p className="mt-1 text-xs text-swamp-800">{detailLine(t)}</p>}
+                  <div className="mt-3 flex justify-end">
+                    <DeleteTripButton id={t.id} label={shortDate(t.date)} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-3 hidden overflow-x-auto sm:block">
             <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-swamp-800/20 text-xs uppercase tracking-wide text-swamp-700">
@@ -189,11 +232,15 @@ export default async function TripLogPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </section>
 
       <form action={logout} className="mt-8">
-        <button type="submit" className="text-xs font-semibold text-swamp-700 underline underline-offset-2">
+        <button
+          type="submit"
+          className="inline-flex h-10 items-center rounded-full border border-swamp-800/20 px-4 text-sm font-semibold text-swamp-800 hover:bg-sand-200"
+        >
           Sign out of trip log
         </button>
       </form>

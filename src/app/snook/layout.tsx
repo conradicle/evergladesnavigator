@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import SnookNav from "@/components/snook/SnookNav";
 
 /**
  * Private, unlisted tool for Captain Adam Gelber. Not linked anywhere,
@@ -28,12 +29,21 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#fbf7ec",
+  // Lets the bottom tab bar sit above the iPhone home indicator.
+  viewportFit: "cover",
 };
 
 export default function SnookLayout({ children }: LayoutProps<"/snook">) {
   return (
-    <main id="main" className="flex-1">
-      {children}
-    </main>
+    <>
+      <main
+        id="main"
+        className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
+        {children}
+      </main>
+      <SnookNav />
+    </>
   );
 }

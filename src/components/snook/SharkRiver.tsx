@@ -22,7 +22,7 @@ export default function SharkRiver({ c }: { c: SharkConditions }) {
             Snook area ratings for {longDate(c.today)} · {c.season === "dry" ? "dry season" : "wet season"}
           </p>
         </div>
-        <Link href="/snook" className="text-sm font-semibold text-sunset-700 underline underline-offset-2">
+        <Link href="/snook" className="hidden text-sm font-semibold text-sunset-700 underline underline-offset-2 md:inline">
           Back to outlook
         </Link>
       </header>
@@ -37,34 +37,42 @@ export default function SharkRiver({ c }: { c: SharkConditions }) {
         <h2 id="areas-heading" className="text-xs font-semibold uppercase tracking-wide text-swamp-700">
           Areas, upriver to the coast
         </h2>
-        <ol className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <p className="mt-1 text-xs text-swamp-700">Tap an area to see why.</p>
+        <ol className="mt-2 divide-y divide-swamp-800/10 overflow-hidden rounded-2xl border border-swamp-800/10 bg-[#fffdf7]">
           {c.areas.map((a) => {
             const col = RATING_COLORS[a.rating];
             return (
-              <li key={a.id} className="overflow-hidden rounded-2xl border border-swamp-800/10 bg-[#fffdf7]">
-                <div className="h-1.5" style={{ backgroundColor: col.swatch }} aria-hidden="true" />
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-display text-base font-semibold text-swamp-950">{a.name}</h3>
+              <li key={a.id}>
+                <details className="group">
+                  <summary
+                    className="flex min-h-14 cursor-pointer list-none items-center gap-3 py-2 pl-3 pr-4 active:bg-sand-100"
+                  >
+                    <span className="h-9 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: col.swatch }} aria-hidden="true" />
+                    <span className="min-w-0 flex-1 font-display text-base font-semibold leading-snug text-swamp-950">{a.name}</span>
                     <span
-                      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-ink-900/20 px-2.5 py-0.5 text-sm font-semibold text-ink-900"
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-ink-900/20 px-3 py-1 text-sm font-semibold text-ink-900"
                       style={{ backgroundColor: col.tint }}
                     >
                       <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: col.swatch }} aria-hidden="true" />
                       {a.rating}
                     </span>
+                    <span aria-hidden="true" className="text-swamp-700 transition group-open:rotate-180">
+                      ▾
+                    </span>
+                  </summary>
+                  <div className="px-4 pb-4 pl-[1.6rem]">
+                    <p className="text-xs text-swamp-700">{a.blurb}</p>
+                    {a.reasons.length ? (
+                      <ul className="mt-2 space-y-1.5 text-sm text-ink-900">
+                        {a.reasons.map((r) => (
+                          <li key={r}>{r}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mt-2 text-sm text-swamp-800">Nothing today pushes this area up or down.</p>
+                    )}
                   </div>
-                  <p className="mt-1 text-xs text-swamp-700">{a.blurb}</p>
-                  {a.reasons.length ? (
-                    <ul className="mt-2 space-y-1 text-sm text-ink-900">
-                      {a.reasons.map((r) => (
-                        <li key={r}>{r}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="mt-2 text-sm text-swamp-800">Nothing today pushes this area up or down.</p>
-                  )}
-                </div>
+                </details>
               </li>
             );
           })}
@@ -72,13 +80,18 @@ export default function SharkRiver({ c }: { c: SharkConditions }) {
       </section>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        <TidePanel c={c} />
         <MarshPanel c={c} />
         <RiverPanel c={c} />
-        <TidePanel c={c} />
       </div>
 
-      <details className="mt-6 rounded-2xl border border-swamp-800/15 bg-[#fffdf7] p-4 sm:p-5">
-        <summary className="cursor-pointer font-display text-lg font-semibold text-swamp-950">How the ratings work</summary>
+      <details className="group mt-6 rounded-2xl border border-swamp-800/15 bg-[#fffdf7] p-4 sm:p-5">
+        <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between font-display text-lg font-semibold text-swamp-950">
+          How the ratings work
+          <span aria-hidden="true" className="text-base text-swamp-700 transition group-open:rotate-180">
+            ▾
+          </span>
+        </summary>
         <div className="mt-3 space-y-2 text-sm text-ink-900">
           <p>
             Each area starts at 0 and gains or loses points from the conditions listed on its card. {SHARK.cutoffs.high} or more
