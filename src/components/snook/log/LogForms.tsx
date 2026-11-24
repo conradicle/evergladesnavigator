@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { addTrip, login, removeTrip, type FormState } from "@/app/snook/log/actions";
-import { BANDS, LOCATIONS } from "@/lib/snook/config";
+import { BAIT_OPTIONS, BANDS, CLARITY_OPTIONS, CURRENT_OPTIONS, LOCATIONS, SHARK_AREAS } from "@/lib/snook/config";
 import { BAND_COLORS } from "../format";
 
 const field = "mt-1 w-full rounded-lg border border-swamp-800/25 bg-white px-3 py-2 text-base text-ink-900";
@@ -119,8 +119,52 @@ export function TripForm({ today }: { today: string }) {
         <label htmlFor="notes" className={label}>
           Notes <span className="font-normal text-swamp-700">(optional)</span>
         </label>
-        <textarea id="notes" name="notes" maxLength={2000} rows={3} className={field} placeholder="Where they were, water color, bait…" />
+        <textarea id="notes" name="notes" maxLength={2000} rows={3} className={field} placeholder="Anything else worth remembering" />
       </div>
+
+      <details className="rounded-xl border border-swamp-800/15 bg-white/60 p-3">
+        <summary className="cursor-pointer text-sm font-semibold text-swamp-900">
+          More detail <span className="font-normal text-swamp-700">(optional, helps tune the ratings)</span>
+        </summary>
+        <div className="mt-3 space-y-3">
+          <div>
+            <label htmlFor="sharkArea" className={label}>
+              Shark River area
+            </label>
+            <select id="sharkArea" name="sharkArea" defaultValue="" className={field}>
+              <option value="">Not the Shark River</option>
+              {SHARK_AREAS.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="sizes" className={label}>
+              Snook sizes
+            </label>
+            <input id="sizes" name="sizes" maxLength={100} className={field} placeholder={'24", 27", 31"'} />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <OptionSelect id="current" title="Current" options={CURRENT_OPTIONS} />
+            <OptionSelect id="bait" title="Bait" options={BAIT_OPTIONS} />
+            <OptionSelect id="clarity" title="Water" options={CLARITY_OPTIONS} />
+          </div>
+          <div>
+            <label htmlFor="lures" className={label}>
+              Lures or bait used
+            </label>
+            <input id="lures" name="lures" maxLength={200} className={field} placeholder="Pilchards, paddle tail" />
+          </div>
+          <div>
+            <label htmlFor="blanks" className={label}>
+              Spots fished with no snook
+            </label>
+            <input id="blanks" name="blanks" maxLength={300} className={field} placeholder="Mouth of Gunboat Creek, west shore of Tarpon Bay" />
+          </div>
+        </div>
+      </details>
 
       <Message state={state} />
       <button
@@ -131,6 +175,24 @@ export function TripForm({ today }: { today: string }) {
         {pending ? "Saving…" : "Save trip"}
       </button>
     </form>
+  );
+}
+
+function OptionSelect({ id, title, options }: { id: string; title: string; options: readonly string[] }) {
+  return (
+    <div>
+      <label htmlFor={id} className={label}>
+        {title}
+      </label>
+      <select id={id} name={id} defaultValue="" className={field}>
+        <option value="">Skip</option>
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o[0].toUpperCase() + o.slice(1)}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
 

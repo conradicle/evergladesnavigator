@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { DeleteTripButton, LoginForm, TripForm } from "@/components/snook/log/LogForms";
 import { BAND_COLORS, shortDate } from "@/components/snook/format";
 import { isLoggedIn, passcodeConfigured } from "@/lib/snook/auth";
-import { BANDS, LOCATIONS, type BandLabel } from "@/lib/snook/config";
+import { BANDS, LOCATIONS, SHARK_AREAS, type BandLabel } from "@/lib/snook/config";
 import { getRedis, listTrips, type Trip } from "@/lib/snook/store";
 import { todayKey } from "@/lib/snook/time";
 import { logout } from "./actions";
@@ -22,6 +22,21 @@ function comparison(t: Trip): string {
   if (diff === 0) return "Matched";
   const n = Math.abs(diff);
   return `${diff > 0 ? "Better" : "Worse"} than forecast by ${n} band${n > 1 ? "s" : ""}`;
+}
+
+function detailLine(t: Trip): string {
+  const d = t.detail;
+  if (!d) return "";
+  return [
+    d.sizes && `Sizes ${d.sizes}`,
+    d.current && `${d.current} current`,
+    d.bait && `bait ${d.bait}`,
+    d.clarity && `${d.clarity} water`,
+    d.lures && `used ${d.lures}`,
+    d.blanks && `nothing at ${d.blanks}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -140,7 +155,15 @@ export default async function TripLogPage() {
                 {trips.map((t) => (
                   <tr key={t.id} className="border-b border-swamp-800/10 align-top">
                     <td className="py-2 pr-3 whitespace-nowrap text-ink-900">{shortDate(t.date)}</td>
-                    <td className="py-2 pr-3 text-ink-900">{LOCATIONS.find((l) => l.id === t.location)?.name}</td>
+                    <td className="py-2 pr-3 text-ink-900">
+                      {LOCATIONS.find((l) => l.id === t.location)?.name}
+                      {t.detail?.sharkArea && (
+                        <span className="block text-xs text-swamp-800">
+                          {SHARK_AREAS.find((a) => a.id === t.detail!.sharkArea)?.name}
+                          {t.shark?.areas[t.detail.sharkArea] ? `, rated ${t.shark.areas[t.detail.sharkArea]!.rating}` : ""}
+                        </span>
+                      )}
+                    </td>
                     <td className="py-2 pr-3 whitespace-nowrap">
                       {t.forecast ? (
                         <BandText score={t.forecast.score} band={t.forecast.band} />
@@ -156,6 +179,7 @@ export default async function TripLogPage() {
                     </td>
                     <td className="py-2 pr-3 text-swamp-800">
                       {[t.otherCatch, t.notes].filter(Boolean).join(". ")}
+                      {t.detail && detailLine(t) && <span className="block text-xs">{detailLine(t)}</span>}
                     </td>
                     <td className="py-2">
                       <DeleteTripButton id={t.id} label={shortDate(t.date)} />

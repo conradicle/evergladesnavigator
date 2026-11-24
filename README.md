@@ -67,8 +67,22 @@ A Vercel Cron job (`vercel.json`) calls `/api/snook/snapshot` at 11:00 UTC
 daily to save that morning's forecast; it needs `CRON_SECRET`. Without the
 database the log shows "Storage not connected" and the outlook still works.
 
+**Shark River (`/snook/shark-river`)**: Low / Moderate / High ratings for six
+areas from Rookery Branch to Ponce de Leon Bay, plus live marsh level at
+MO-215 (with 3/7/14/30-day change), Rookery Branch water temp, salinity, and
+flow, Gunboat Island net flow, and tides at the river mouth, each compared
+with the normal range for the date. Rules and thresholds are `SHARK` and
+`SHARK_RULES` in `config.ts`, built on the FIU marsh-drawdown pattern
+(Massie et al. 2025). Data comes from USGS Water Services
+(`src/lib/snook/shark.ts`). MO-215 normals are precomputed in
+`src/lib/snook/data/mo215-normals.json` (2013-2025 record) because the full
+history is slow to download. The trip log's optional "More detail" fields
+(Shark River area, sizes, current, bait, clarity, lures, blank spots) save
+with that day's Shark River conditions, and the daily cron saves those too.
+
 Tests: `npm test` (vitest) covers scoring, caps, the reschedule flag,
-regulations, time zones, CSV escaping, and the coming-soon gate.
+regulations, time zones, CSV escaping, Shark River ratings, and the
+coming-soon gate.
 
 Environment variables are listed in `.env.example`.
 

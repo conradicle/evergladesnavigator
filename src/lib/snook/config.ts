@@ -287,3 +287,89 @@ export const REGULATIONS = {
   url: "https://myfwc.com/fishing/saltwater/recreational/snook/",
   lastChecked: "Nov 23, 2026",
 } as const;
+
+/**
+ * Shark River area ratings (/snook/shark-river). Rule-based starting
+ * point, meant to be tuned against the trip log.
+ *
+ * The core pattern comes from FIU tracking and electrofishing work in the
+ * Shark River (Massie et al. 2025, Scientific Reports 15:41217): in the dry
+ * season (Nov-Apr), once the marsh at MO-215 falls below flood stage
+ * (30 cm, 0.98 ft NAVD88), marsh prey get pushed into the river channels
+ * and snook feed upriver (up to 70% of tagged-snook detections were in the
+ * upper river in Mar-Apr). In the wet season (May-Oct) snook move to the
+ * lower estuary, passes, and coast to spawn. Long high-water years blunt
+ * the prey pulse.
+ *
+ * Data: USGS Water Services (free). The legacy waterservices.usgs.gov API
+ * is slated to move to api.waterdata.usgs.gov; every fetch fails soft.
+ */
+export const SHARK = {
+  lat: 25.35,
+  lon: -81.13,
+  stations: {
+    marsh: { id: "252820080505401", name: "MO-215 (Shark Slough marsh)" },
+    rookery: { id: "022908295", name: "Bottle Creek at Rookery Branch" },
+    gunboat: { id: "252230081021300", name: "Shark River below Gunboat Island" },
+  },
+  tideStation: { id: "8724769", name: "Shark River entrance" },
+  /** Same idea as TIDE.fullFlowFtPerHour (median peak rate 0.79 ft/hour in Nov 2026). */
+  fullFlowFtPerHour: 1.25,
+  marsh: {
+    floodStageFt: 0.98,
+    /** 14-day change that counts as falling / rising, ft. */
+    fallingFt14d: 0.05,
+    risingFt14d: 0.1,
+    /** Below this the marsh is close to dry and the prey pulse is mostly spent. */
+    nearlyDryFt: 0.0,
+  },
+  /** Water this cold (°F) at Rookery Branch or the Flamingo coast counts as a cold spell. */
+  coldWaterF: 60,
+  /** Daylight mean wind (kt, Flamingo forecast) that roughs up the open coastal areas. */
+  windyKt: 15,
+  dryMonths: [11, 12, 1, 2, 3, 4] as readonly number[],
+  peakUpriverMonths: [3, 4] as readonly number[],
+  /** Points at or above `high` rate High; at or below `low` rate Low; Moderate between. */
+  cutoffs: { high: 2, low: -1 },
+} as const;
+
+export type SharkAreaId = "rookery" | "tarponEast" | "tarponWest" | "lowerInterior" | "lowerCoastal" | "ponce";
+
+/** Upstream to downstream. */
+export const SHARK_AREAS: { id: SharkAreaId; name: string; blurb: string }[] = [
+  { id: "rookery", name: "Rookery Branch", blurb: "Upper river where the marsh drains in. Fresh water, narrow creeks." },
+  { id: "tarponEast", name: "Eastern Tarpon Bay", blurb: "Upper bay, first stop for prey coming out of Rookery Branch." },
+  { id: "tarponWest", name: "Western Tarpon Bay", blurb: "Lower bay, brackish, toward the river mouth." },
+  { id: "lowerInterior", name: "Lower Shark River (interior)", blurb: "Deeper main river channel between Tarpon Bay and the coast." },
+  { id: "lowerCoastal", name: "Lower Shark River (coastal)", blurb: "River mouth and lower creeks, salty, big tides." },
+  { id: "ponce", name: "Ponce de Leon Bay", blurb: "Open bay at the coast. Exposed to wind and cold." },
+];
+
+export type SharkRule =
+  | "drySeason"
+  | "peakUpriver"
+  | "wetSeason"
+  | "marshDraining"
+  | "marshFallingFlooded"
+  | "marshRising"
+  | "marshNearlyDry"
+  | "cold"
+  | "windy";
+
+/** Points each condition adds to (or takes from) each area. */
+export const SHARK_RULES: Record<SharkRule, Partial<Record<SharkAreaId, number>>> = {
+  drySeason: { rookery: 1, tarponEast: 1 },
+  peakUpriver: { rookery: 1 },
+  wetSeason: { rookery: -1, lowerCoastal: 1, ponce: 1 },
+  marshDraining: { rookery: 2, tarponEast: 1 },
+  marshFallingFlooded: { rookery: 1 },
+  marshRising: { rookery: -1, tarponEast: -1 },
+  marshNearlyDry: { rookery: -1 },
+  cold: { ponce: -2, lowerCoastal: -1, lowerInterior: 1, tarponWest: 1 },
+  windy: { ponce: -1, lowerCoastal: -1 },
+};
+
+/** Trip log detail choices. */
+export const CURRENT_OPTIONS = ["incoming", "outgoing", "slack", "mixed"] as const;
+export const BAIT_OPTIONS = ["none seen", "some", "lots"] as const;
+export const CLARITY_OPTIONS = ["clear", "stained", "muddy"] as const;

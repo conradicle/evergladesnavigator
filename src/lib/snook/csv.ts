@@ -1,4 +1,4 @@
-import { FACTOR_LABELS, LOCATIONS, type FactorKey } from "./config";
+import { FACTOR_LABELS, LOCATIONS, SHARK_AREAS, type FactorKey } from "./config";
 import type { Trip } from "./store";
 
 /**
@@ -7,6 +7,8 @@ import type { Trip } from "./store";
  */
 export function csvCell(v: string | number | null | undefined): string {
   if (v == null) return "";
+  // Real numbers (like a negative marsh change) can't carry a formula; leave them numeric.
+  if (typeof v === "number") return Number.isFinite(v) ? String(v) : "";
   let s = String(v);
   if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
   return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
@@ -35,9 +37,29 @@ export function tripsToCsv(trips: Trip[]): string {
     ...FACTOR_KEYS.map((k) => `factor_${k}`),
     "other_catch",
     "notes",
+    "shark_area",
+    "shark_area_rating",
+    "shark_area_points",
+    "shark_source",
+    "marsh_mo215_ft",
+    "marsh_change_14d_ft",
+    "marsh_state",
+    "rookery_water_f",
+    "rookery_salinity_ppt",
+    "gunboat_net_flow_cfs",
+    "snook_sizes",
+    "current",
+    "bait",
+    "clarity",
+    "lures",
+    "blank_spots",
   ];
   const rows = trips.map((t) => {
     const f = t.forecast;
+    const d = t.detail;
+    const s = t.shark;
+    const area = SHARK_AREAS.find((a) => a.id === d?.sharkArea);
+    const areaRating = area ? s?.areas[area.id] : undefined;
     const factor = (k: FactorKey) => {
       const e = f?.factors.find((x) => x.key === k)?.earned;
       return e == null ? "" : e.toFixed(1);
@@ -62,6 +84,22 @@ export function tripsToCsv(trips: Trip[]): string {
       ...FACTOR_KEYS.map(factor),
       t.otherCatch,
       t.notes,
+      area?.name ?? "",
+      areaRating?.rating ?? "",
+      areaRating?.points ?? "",
+      s?.source ?? "",
+      s?.marshFt ?? "",
+      s?.marshChange14 ?? "",
+      s?.marshState ?? "",
+      s?.rookeryTempF ?? "",
+      s?.rookerySalinity ?? "",
+      s?.gunboatNetCfs ?? "",
+      d?.sizes ?? "",
+      d?.current ?? "",
+      d?.bait ?? "",
+      d?.clarity ?? "",
+      d?.lures ?? "",
+      d?.blanks ?? "",
     ];
   });
   return [header, ...rows].map((r) => r.map(csvCell).join(",")).join("\r\n") + "\r\n";

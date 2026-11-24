@@ -5,17 +5,30 @@ import { revalidatePath } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { isLoggedIn, LOG_COOKIE, LOG_COOKIE_MAX_AGE, passcodeMatches, sessionToken } from "@/lib/snook/auth";
-import { BANDS, LOCATIONS, type BandLabel, type LocationId } from "@/lib/snook/config";
-import { buildOutlook } from "@/lib/snook/outlook";
+import {
+  BAIT_OPTIONS,
+  BANDS,
+  CLARITY_OPTIONS,
+  CURRENT_OPTIONS,
+  LOCATIONS,
+  SHARK_AREAS,
+  type BandLabel,
+  type LocationId,
+  type SharkAreaId,
+} from "@/lib/snook/config";
+import { buildOutlook, type Outlook } from "@/lib/snook/outlook";
+import { buildSharkConditions, compactShark } from "@/lib/snook/shark";
 import {
   allowLoginAttempt,
   compactOutlook,
   deleteTrip,
+  findSharkSnapshot,
   findSnapshotForecast,
   getRedis,
   pickForecast,
   saveTrip,
   type Trip,
+  type TripDetail,
 } from "@/lib/snook/store";
 import { addDays, dateKeyOf } from "@/lib/snook/time";
 
@@ -68,11 +81,36 @@ export async function addTrip(_prev: FormState, fd: FormData): Promise<FormState
   if (snookRaw === "" || !Number.isInteger(snook) || snook < 0 || snook > 500) return { error: "Enter how many snook (0 is fine)." };
   if (!BAND_LABELS.includes(bite)) return { error: "Pick how the bite was." };
 
+  const pick = <T extends string>(name: string, options: readonly T[]): T | "" => {
+    const v = String(fd.get(name) ?? "");
+    return (options as readonly string[]).includes(v) ? (v as T) : "";
+  };
+  const text = (name: string, max: number) => String(fd.get(name) ?? "").trim().slice(0, max);
+  const areaRaw = String(fd.get("sharkArea") ?? "");
+  const sharkArea = SHARK_AREAS.some((a) => a.id === areaRaw) ? (areaRaw as SharkAreaId) : null;
+  const detail: TripDetail = {
+    sharkArea,
+    sizes: text("sizes", 100),
+    current: pick("current", CURRENT_OPTIONS),
+    bait: pick("bait", BAIT_OPTIONS),
+    clarity: pick("clarity", CLARITY_OPTIONS),
+    lures: text("lures", 200),
+    blanks: text("blanks", 300),
+  };
+
   // The forecast as it stood before the trip; fall back to today's live outlook.
+  let live: Outlook | null = null;
   let forecast = await findSnapshotForecast(redis, date, location);
   if (!forecast && date >= today) {
-    const live = await buildOutlook();
+    live = await buildOutlook();
     forecast = pickForecast(compactOutlook(live), date, location, "live");
+  }
+
+  // Shark River conditions for that date: the morning snapshot, or live if the trip is today.
+  let shark = sharkArea ? await findSharkSnapshot(redis, date) : null;
+  if (sharkArea && !shark && date >= today) {
+    live ??= await buildOutlook();
+    shark = compactShark(await buildSharkConditions(live), "live");
   }
 
   const trip: Trip = {
@@ -87,13 +125,19 @@ export async function addTrip(_prev: FormState, fd: FormData): Promise<FormState
     otherCatch,
     notes,
     forecast,
+    detail,
+    shark,
   };
   await saveTrip(redis, trip);
   revalidatePath("/snook/log");
+  const areaRating = sharkArea ? shark?.areas[sharkArea]?.rating : undefined;
+  const areaName = SHARK_AREAS.find((a) => a.id === sharkArea)?.name;
   return {
-    ok: forecast
-      ? `Saved. The forecast for that day was ${forecast.score} (${forecast.band}).`
-      : "Saved. No forecast was on file for that date.",
+    ok:
+      (forecast
+        ? `Saved. The forecast for that day was ${forecast.score} (${forecast.band}).`
+        : "Saved. No forecast was on file for that date.") +
+      (areaName ? (areaRating ? ` ${areaName} was rated ${areaRating}.` : ` No Shark River rating was on file for that date.`) : ""),
   };
 }
 

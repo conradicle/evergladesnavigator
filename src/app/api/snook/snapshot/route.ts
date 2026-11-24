@@ -1,7 +1,8 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { connection } from "next/server";
 import { buildOutlook } from "@/lib/snook/outlook";
-import { getRedis, saveSnapshot } from "@/lib/snook/store";
+import { buildSharkConditions, compactShark } from "@/lib/snook/shark";
+import { getRedis, saveSharkSnapshot, saveSnapshot } from "@/lib/snook/store";
 
 /**
  * Daily forecast snapshot, run by Vercel Cron (vercel.json) each morning.
@@ -24,5 +25,11 @@ export async function GET(request: Request) {
   if (!redis) return Response.json({ ok: false, error: "storage not connected" }, { status: 503 });
   const outlook = await buildOutlook();
   await saveSnapshot(redis, outlook);
-  return Response.json({ ok: true, date: outlook.today, unavailable: outlook.unavailable });
+  const shark = await buildSharkConditions(outlook);
+  await saveSharkSnapshot(redis, compactShark(shark, "daily snapshot"));
+  return Response.json({
+    ok: true,
+    date: outlook.today,
+    unavailable: [...outlook.unavailable, ...shark.unavailable],
+  });
 }

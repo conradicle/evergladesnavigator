@@ -185,6 +185,8 @@ describe("csv", () => {
     expect(csvCell("=HYPERLINK(1)")).toBe("'=HYPERLINK(1)");
     expect(csvCell(null)).toBe("");
     expect(csvCell(12)).toBe("12");
+    expect(csvCell(-0.03)).toBe("-0.03");
+    expect(csvCell("-1+2")).toBe("'-1+2");
   });
 });
 

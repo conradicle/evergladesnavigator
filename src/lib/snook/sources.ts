@@ -60,7 +60,7 @@ const yyyymmdd = (k: DateKey) => k.replaceAll("-", "");
 
 /** High/low tide predictions. Tries each configured station in order. */
 export async function fetchTides(
-  loc: LocationConfig,
+  loc: Pick<LocationConfig, "tideStations">,
   from: DateKey,
   to: DateKey,
 ): Promise<{ extremes: TideExtreme[]; station: string } | null> {

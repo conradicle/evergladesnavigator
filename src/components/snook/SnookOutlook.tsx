@@ -51,24 +51,32 @@ export default function SnookOutlook({ outlook }: { outlook: Outlook }) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-10 pt-5 sm:px-6">
-      <header className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <Image src="/logo-icon.png" alt="" width={36} height={36} className="h-9 w-9" priority />
           <div>
-            <h1 className="font-display text-2xl font-semibold leading-tight text-swamp-950">Snook Outlook</h1>
+            <h1 className="whitespace-nowrap font-display text-2xl font-semibold leading-tight text-swamp-950">Snook Outlook</h1>
             <p className="text-xs text-swamp-700">
               Flamingo, Chokoloskee &amp; Lostmans
               {outlook.weatherIssuedAt && <> · forecast issued {fmtTime(outlook.weatherIssuedAt)}</>}
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => router.refresh()}
-          className="rounded-full border border-swamp-800/20 px-3 py-1.5 text-xs font-semibold text-swamp-800 transition hover:bg-sand-200"
-        >
-          Refresh
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <a
+            href="/snook/shark-river"
+            className="rounded-full border border-swamp-800/20 px-3 py-1.5 text-xs font-semibold text-swamp-800 transition hover:bg-sand-200"
+          >
+            Shark River
+          </a>
+          <button
+            type="button"
+            onClick={() => router.refresh()}
+            className="rounded-full border border-swamp-800/20 px-3 py-1.5 text-xs font-semibold text-swamp-800 transition hover:bg-sand-200"
+          >
+            Refresh
+          </button>
+        </div>
       </header>
 
       {outlook.unavailable.length > 0 && (
@@ -88,6 +96,10 @@ export default function SnookOutlook({ outlook }: { outlook: Outlook }) {
         <p>
           <a href="/snook/log" className="font-semibold text-sunset-700 underline underline-offset-2">
             Trip log
+          </a>
+          {" · "}
+          <a href="/snook/shark-river" className="font-semibold text-sunset-700 underline underline-offset-2">
+            Shark River area ratings
           </a>
         </p>
         <p>
