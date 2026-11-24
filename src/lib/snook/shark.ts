@@ -183,8 +183,10 @@ export function marshNormalsFor(today: DateKey): { p10: number; p25: number; p50
 /* ---------- fetchers (never throw) ---------- */
 
 async function getText(url: string, revalidate: number): Promise<string | null> {
+  // USGS Water Services often takes 5-15 s; a generous timeout plus the data
+  // cache (stale copies are served while refreshing) keeps the page usable.
   try {
-    const res = await fetch(url, { headers: UA, next: { revalidate }, signal: AbortSignal.timeout(15_000) });
+    const res = await fetch(url, { headers: UA, next: { revalidate }, signal: AbortSignal.timeout(25_000) });
     if (!res.ok) return null;
     return await res.text();
   } catch {
@@ -199,7 +201,7 @@ async function fetchLatest(): Promise<Map<string, Latest> | null> {
   const s = SHARK.stations;
   const url =
     `${USGS}/iv/?format=json&sites=${s.marsh.id},${s.rookery.id},${s.gunboat.id}` +
-    `&parameterCd=00010,00060,00480,62611,72137&period=P3D&siteStatus=all`;
+    `&parameterCd=00010,00060,00480,62611,72137`; // no period = latest value only (USGS answers this fastest)
   const text = await getText(url, Math.min(CACHE_SECONDS, 3600));
   if (!text) return null;
   try {
